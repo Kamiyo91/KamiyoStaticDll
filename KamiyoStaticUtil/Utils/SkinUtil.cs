@@ -230,7 +230,7 @@ namespace KamiyoStaticUtil.Utils
             var num = 0;
             foreach (var uiButton in uiButtons)
             {
-                if (labels.Count <= num + 1 && !string.IsNullOrEmpty(labels[num]))
+                if (num < labels.Count && !string.IsNullOrEmpty(labels[num]))
                     uiButton.TabName.text = ModParameters.EffectTexts[labels[num]].Desc;
                 else
                     uiButton.gameObject.SetActive(false);
@@ -255,10 +255,10 @@ namespace KamiyoStaticUtil.Utils
                         uiButton.TabName.text = TextDataModel.GetText("ui_penetrate_form");
                         break;
                     case 2:
-                        uiButton.TabName.text = TextDataModel.GetText("ui_blunt_form");
+                        uiButton.TabName.text = TextDataModel.GetText("ui_hit_form");
                         break;
                     case 3:
-                        uiButton.TabName.text = TextDataModel.GetText("ui_guard_form");
+                        uiButton.TabName.text = TextDataModel.GetText("ui_defense_form");
                         break;
                 }
 

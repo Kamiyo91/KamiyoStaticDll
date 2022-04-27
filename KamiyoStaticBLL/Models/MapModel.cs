@@ -1,13 +1,13 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
 
 namespace KamiyoStaticBLL.Models
 {
     public class MapModel
     {
-        public Component Component { get; set; }
+        public Type Component { get; set; }
         public string Stage { get; set; }
-        public List<int> StageIds { get; set; }
+        public List<LorId> StageIds { get; set; }
         public bool IsPlayer { get; set; }
         public bool OneTurnEgo { get; set; }
         public float Bgx { get; set; } = 0.5f;

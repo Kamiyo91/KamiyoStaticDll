@@ -22,7 +22,7 @@ namespace KamiyoStaticUtil.Utils
                    ids.Contains(Singleton<StageController>.Instance.GetStageModel().ClassInfo.id);
         }
 
-        private static void RemoveValueInAddedMap(string name, bool removeAll = false)
+        public static void RemoveValueInAddedMap(string name, bool removeAll = false)
         {
             var mapList = (List<MapManager>)typeof(BattleSceneRoot).GetField("_addedMapList",
                 AccessTools.all)?.GetValue(SingletonBehavior<BattleSceneRoot>.Instance);
@@ -37,7 +37,19 @@ namespace KamiyoStaticUtil.Utils
             typeof(StageController).GetField("_mapChanged", AccessTools.all)
                 ?.SetValue(Singleton<StageController>.Instance, value);
         }
+        public static void LoadBoomEffect() 
+        {
+            var map = Util.LoadPrefab("InvitationMaps/InvitationMap_BlackSilence4",
+                SingletonBehavior<BattleSceneRoot>.Instance.transform);
+            ModParameters.BoomEffectMap = map.GetComponent<MapManager>() as BlackSilence4thMapManager;
+            Object.Destroy(map);
+        }
 
+        public static void UnloadBoomEffect()
+        {
+            Object.Destroy(ModParameters.BoomEffectMap);
+            ModParameters.BoomEffectMap = null;
+        }
         public static void GetArtWorks(DirectoryInfo dir)
         {
             if (dir.GetDirectories().Length != 0)

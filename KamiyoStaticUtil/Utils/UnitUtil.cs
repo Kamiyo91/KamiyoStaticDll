@@ -21,6 +21,14 @@ namespace KamiyoStaticUtil.Utils
         {
             return faction == Faction.Player ? Faction.Enemy : Faction.Player;
         }
+        public static bool CantUseCardAfraid(BattleDiceCardModel card,string packageId)
+        {
+            return card.XmlData.Spec.Ranged == CardRange.FarArea ||
+                   card.XmlData.Spec.Ranged == CardRange.FarAreaEach || card.GetOriginCost() > 3 ||
+                   card.XmlData.IsEgo() || card.XmlData.id.packageId == packageId &&
+                   (card.XmlData.id.id == 32 || card.XmlData.id.id == 33 || card.XmlData.id.id == 34 ||
+                    card.XmlData.id.id == 35);
+        }
 
         public static void PhaseChangeAllPlayerUnitRecoverBonus(int hp, int stagger, int light,
             bool fullLightRecover = false)
@@ -446,10 +454,12 @@ namespace KamiyoStaticUtil.Utils
 
         private static IEnumerable<string> GetKeywordsList(LorId id)
         {
-            var keyword = ModParameters.OnlyCardKeywords.FirstOrDefault(x => x.Item2.Contains(id))?.Item1;
-            return string.IsNullOrEmpty(keyword)
-                ? new List<string> { id.packageId + "DefaultCard" }
-                : new List<string> { id.packageId + "DefaultCard", keyword };
+            var keywords = ModParameters.OnlyCardKeywords.FirstOrDefault(x => x.Item2.Contains(id))?.Item1;
+            var defaultKeyword = ModParameters.DefaultKeyword.FirstOrDefault(x => x.Key == id.packageId);
+            var stringList = new List<string> { defaultKeyword.Value };
+            if (keywords != null && keywords.Any())
+                stringList.AddRange(keywords);
+            return stringList;
         }
 
         private static DiceCardXmlInfo CardOptionChange(DiceCardXmlInfo cardXml, List<CardOption> option,
@@ -524,6 +534,11 @@ namespace KamiyoStaticUtil.Utils
                          passive.id.packageId == packageId &&
                          ModParameters.UntransferablePassives.Contains(passive.id)))
                 passive.CanGivePassive = false;
+            foreach (var item in ModParameters.SameInnerIdPassives)
+            foreach (var passive in Singleton<PassiveXmlList>.Instance.GetDataAll().Where(passive =>
+                         passive.id.packageId == packageId &&
+                         item.Value.Contains(passive.id)))
+                passive.InnerTypeId = item.Key;
         }
     }
 }

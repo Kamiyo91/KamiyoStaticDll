@@ -68,10 +68,12 @@
     <Compile Include="BaseClass\MechUtilBase.cs" />
     <Compile Include="BaseClass\NpcMechUtilBase.cs" />
     <Compile Include="CommonBuffs\BattleUnitBuf_KamiyoBigDamageForTestingPurpose.cs" />
+    <Compile Include="CommonBuffs\BattleUnitBuf_KamiyoImmortal.cs" />
     <Compile Include="CommonBuffs\BattleUnitBuf_KamiyoImmortalForTestPurpose.cs" />
     <Compile Include="CommonBuffs\BattleUnitBuf_KamiyoImmortalUntilRoundEnd.cs" />
     <Compile Include="CommonBuffs\BattleUnitBuf_KamiyoImmunityToStatusAliment.cs" />
     <Compile Include="CommonBuffs\BattleUnitBuf_KamiyoLoseOnDeathBuff.cs" />
+    <Compile Include="CommonBuffs\BattleUnitBuf_KamiyoPlayerShimmeringBuf.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\LocalizeUtil.cs" />
     <Compile Include="Utils\MapStaticUtil.cs" />

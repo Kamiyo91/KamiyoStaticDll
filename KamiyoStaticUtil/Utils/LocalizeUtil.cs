@@ -131,8 +131,8 @@ namespace KamiyoStaticUtil.Utils
                                     var enemy = enumerator3.Current;
                                     enemy.name = charactersNameRoot.nameList.Find(x => x.ID == enemy.id.id).name;
                                     Singleton<EnemyUnitClassInfoList>.Instance.GetData(enemy.id).name = enemy.name;
-                                    ModParameters.NameTexts.Remove(enemy.id.id.ToString());
-                                    ModParameters.NameTexts.Add(enemy.id.id.ToString(), enemy.name);
+                                    ModParameters.NameTexts.Remove(enemy.id);
+                                    ModParameters.NameTexts.Add(enemy.id, enemy.name);
                                 }
                             }
                         }
@@ -384,8 +384,8 @@ namespace KamiyoStaticUtil.Utils
                                 var enemy = enumerator3.Current;
                                 enemy.name = charactersNameRoot.nameList.Find(x => x.ID == enemy.id.id).name;
                                 Singleton<EnemyUnitClassInfoList>.Instance.GetData(enemy.id).name = enemy.name;
-                                ModParameters.NameTexts.Remove(enemy.id.id.ToString());
-                                ModParameters.NameTexts.Add(enemy.id.id.ToString(), enemy.name);
+                                ModParameters.NameTexts.Remove(enemy.id);
+                                ModParameters.NameTexts.Add(enemy.id, enemy.name);
                             }
                         }
                     }
@@ -530,7 +530,7 @@ namespace KamiyoStaticUtil.Utils
                 "Mono.Cecil",
                 "MonoMod.RuntimeDetour",
                 "MonoMod.Utils",
-                "0KamiyoStaticHarmony",
+                "KamiyoStaticHarmony",
                 "KamiyoStaticBLL",
                 "KamiyoStaticUtil"
             }.Exists(y => x.Contains("The same assembly name already exists. : " + y)));

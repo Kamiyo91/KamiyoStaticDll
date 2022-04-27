@@ -6,7 +6,7 @@ namespace KamiyoStaticBLL.Models
     {
         public int UnitId { get; set; }
         public SephirahType SephirahUnit { get; set; }
-        public string UnitNameId { get; set; }
+        public LorId UnitNameId { get; set; }
         public string SkinName { get; set; }
         public List<LorId> PassiveIds { get; set; }
     }

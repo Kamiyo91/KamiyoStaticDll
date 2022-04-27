@@ -15,11 +15,11 @@ namespace KamiyoStaticBLL.Models
         public static readonly Dictionary<string, EffectTextModel> EffectTexts =
             new Dictionary<string, EffectTextModel>();
 
-        public static Dictionary<string, string> NameTexts = new Dictionary<string, string>();
+        public static Dictionary<LorId, string> NameTexts = new Dictionary<LorId, string>();
 
-        public static List<Tuple<string, List<LorId>, LorId>> OnlyCardKeywords = new List<Tuple<string, List<LorId>, LorId>>();
+        public static List<Tuple<List<string>, List<LorId>, LorId>> OnlyCardKeywords = new List<Tuple<List<string>, List<LorId>, LorId>>();
         
-        public static Dictionary<LorId, int> DynamicNames = new Dictionary<LorId, int>();
+        public static Dictionary<LorId, LorId> DynamicNames = new Dictionary<LorId, LorId>();
         public static Dictionary<LorId, Tuple<string, SephirahType>> DynamicSephirahNames = new Dictionary<LorId, Tuple<string, SephirahType>>();
         public static List<LorId> BooksIds = new List<LorId>();
         public static List<LorId> CustomSkinTrue = new List<LorId>();
@@ -60,10 +60,13 @@ namespace KamiyoStaticBLL.Models
         public static List<LorId> BookList = new List<LorId>();
         public static List<LorId> EmotionExcludePassive = new List<LorId>();
         public static Dictionary<LorId, List<SephirahType>> UniqueUnitStages = new Dictionary<LorId, List<SephirahType>>();
-        public static List<Tuple<LorId, List<LorId>>> DualDeckPassive = new List<Tuple<LorId, List<LorId>>>();
+        public static List<Tuple<LorId, List<LorId>>> MultiDeckPassive = new List<Tuple<LorId, List<LorId>>>();
         public static List<LorId> MultiDeckPassiveIds = new List<LorId>();
         public static List<Tuple<LorId, LorId, List<string>>> MultiDeckLabels = new List<Tuple<LorId, LorId, List<string>>>();
         public static List<LorId> MultiDeckUnits = new List<LorId>();
+        public static Dictionary<string, string> DefaultKeyword = new Dictionary<string, string>();
+        public static Dictionary<int, List<LorId>> SameInnerIdPassives = new Dictionary<int, List<LorId>>();
+        public static BlackSilence4thMapManager BoomEffectMap = null;
         public static bool ChangedMultiView = false;
     }
 }

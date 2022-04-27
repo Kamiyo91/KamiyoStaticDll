@@ -151,7 +151,10 @@ namespace KamiyoStaticHarmony.Harmony
             __state = newBook;
             if (!ModParameters.PackageIds.Contains(__instance.bookItem.ClassInfo.id.packageId)) return;
             if (ModParameters.DynamicNames.ContainsKey(__instance.bookItem.ClassInfo.id))
+            {
                 __instance.ResetTempName();
+                __instance.customizeData.SetCustomData(true);
+            }
             if (!ModParameters.DynamicSephirahNames.ContainsKey(__instance.bookItem.ClassInfo.id)) return;
             __instance.ResetTempName();
             __instance.customizeData.SetCustomData(true);
@@ -163,14 +166,17 @@ namespace KamiyoStaticHarmony.Harmony
             bool isEnemySetting, bool force, BookModel __state)
         {
             if (force) return;
-            if (!ModParameters.PackageIds.Contains(newBook.ClassInfo.workshopID)) return;
-            if (ModParameters.SkinNameIds.Any(x =>
+            if (newBook == null || !ModParameters.PackageIds.Contains(newBook.ClassInfo.id.packageId)) return;
+            if (ModParameters.SkinNameIds != null && ModParameters.SkinNameIds.Any(x =>
                     x.Item2.Contains(newBook.ClassInfo.id) && newBook.ClassInfo.CharacterSkin.Contains(x.Item1)))
+            {
                 newBook.ClassInfo.CharacterSkin = new List<string>
                 {
                     ModParameters.SkinNameIds.FirstOrDefault(x => newBook.ClassInfo.CharacterSkin.Contains(x.Item1))
                         ?.Item3
                 };
+            }
+
             if (__state != null && ModParameters.DynamicSephirahNames.ContainsKey(__state.ClassInfo.id))
             {
                 if (!ModParameters.CustomSkinTrue.Contains(__state.ClassInfo.id))
@@ -183,12 +189,11 @@ namespace KamiyoStaticHarmony.Harmony
                 __instance.EquipBook(__state, isEnemySetting, true);
                 return;
             }
-
             if (!ModParameters.DynamicNames.ContainsKey(newBook.ClassInfo.id)) return;
             if (UnitUtil.CheckSkinUnitData(__instance)) return;
             if (!ModParameters.CustomSkinTrue.Contains(newBook.ClassInfo.id))
                 __instance.customizeData.SetCustomData(false);
-            var nameId = ModParameters.DynamicNames[newBook.ClassInfo.id].ToString();
+            var nameId = ModParameters.DynamicNames[newBook.ClassInfo.id];
             __instance.SetTempName(ModParameters.NameTexts[nameId]);
         }
 
@@ -208,7 +213,7 @@ namespace KamiyoStaticHarmony.Harmony
             }
 
             var passiveDeck =
-                ModParameters.DualDeckPassive.FirstOrDefault(x =>
+                ModParameters.MultiDeckPassive.FirstOrDefault(x =>
                     x.Item1 == targetpassive.originData.currentpassive.id);
             if (passiveDeck != null && !__instance.GetPassiveModelList()
                     .Exists(x => passiveDeck.Item2.Contains(x.reservedData.currentpassive.id)) &&
@@ -335,7 +340,7 @@ namespace KamiyoStaticHarmony.Harmony
                 string.IsNullOrEmpty(__instance.SelectedUnit.workshopSkin))
             {
                 __instance.previewData.Name = __instance.SelectedUnit.name;
-                var nameId = ModParameters.DynamicNames[__instance.SelectedUnit.bookItem.ClassInfo.id].ToString();
+                var nameId = ModParameters.DynamicNames[__instance.SelectedUnit.bookItem.ClassInfo.id];
                 __instance.SelectedUnit.SetTempName(ModParameters.NameTexts[nameId]);
             }
             else
@@ -535,6 +540,7 @@ namespace KamiyoStaticHarmony.Harmony
                                                                                __instance.currentunit.bookItem.BookId ==
                                                                                x.Item2)
                     ?.Item3;
+                Debug.LogError(labels?.Count.ToString());
                 ModParameters.ChangedMultiView = true;
                 if (__instance.currentunit.bookItem.GetCurrentDeckIndex() > 1)
                     __instance.currentunit.ReEquipDeck();

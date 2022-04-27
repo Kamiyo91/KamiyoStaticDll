@@ -7,64 +7,63 @@ namespace KamiyoStaticBLL.Models
 {
     public static class ModParameters
     {
-        public static List<string> PackageIds;
-        public static Dictionary<string, Sprite> ArtWorks;
-        public static List<string> Path;
-        public static string Language;
+        public static List<string> PackageIds = new List<string>();
+        public static Dictionary<string, Sprite> ArtWorks = new Dictionary<string, Sprite>();
+        public static List<string> Path = new List<string>();
+        public static string Language = string.Empty;
 
         public static readonly Dictionary<string, EffectTextModel> EffectTexts =
             new Dictionary<string, EffectTextModel>();
 
-        public static Dictionary<string, string> NameTexts;
+        public static Dictionary<string, string> NameTexts = new Dictionary<string, string>();
 
-        public static List<Tuple<string, List<LorId>, LorId>> OnlyCardKeywords;
+        public static List<Tuple<string, List<LorId>, LorId>> OnlyCardKeywords = new List<Tuple<string, List<LorId>, LorId>>();
+        
+        public static Dictionary<LorId, int> DynamicNames = new Dictionary<LorId, int>();
+        public static Dictionary<LorId, Tuple<string, SephirahType>> DynamicSephirahNames = new Dictionary<LorId, Tuple<string, SephirahType>>();
+        public static List<LorId> BooksIds = new List<LorId>();
+        public static List<LorId> CustomSkinTrue = new List<LorId>();
+        public static List<LorId> PersonalCardList = new List<LorId>();
 
-        public static Dictionary<LorId, int> DynamicNames;
-        public static Dictionary<LorId, Tuple<string, SephirahType>> DynamicSephirahNames;
-        public static List<LorId> BooksIds;
-        public static List<LorId> CustomSkinTrue;
-        public static List<LorId> PersonalCardList;
+        public static List<LorId> EgoPersonalCardList = new List<LorId>();
+        public static List<LorId> UntransferablePassives = new List<LorId>();
 
-        public static List<LorId> EgoPersonalCardList;
-        public static List<LorId> UntransferablePassives;
+        public static List<Tuple<string, List<LorId>, string>> SkinNameIds = new List<Tuple<string, List<LorId>, string>>();
+        
+        public static List<LorId> NoInventoryCardList = new List<LorId>();
 
-        public static List<Tuple<string, List<LorId>, string>> SkinNameIds;
+        public static Dictionary<string, List<LorId>> SpritePreviewChange = new Dictionary<string, List<LorId>>();
 
-        public static List<LorId> NoInventoryCardList;
+        public static List<LorId> NoEgoFloorUnit = new List<LorId>();
 
-        public static Dictionary<string, List<LorId>> SpritePreviewChange;
-
-        public static List<LorId> NoEgoFloorUnit;
-
-        public static Dictionary<string, List<LorId>> DefaultSpritePreviewChange;
+        public static Dictionary<string, List<LorId>> DefaultSpritePreviewChange = new Dictionary<string, List<LorId>>();
 
         public static List<Tuple<LorId, List<PreBattleUnitModel>, List<SephirahType>, PreBattleUnitSpecialCases>>
-            PreBattleUnits;
+            PreBattleUnits = new List<Tuple<LorId, List<PreBattleUnitModel>, List<SephirahType>, PreBattleUnitSpecialCases>>();
 
-        public static Dictionary<LorId, bool> BannedEmotionStages;
+        public static Dictionary<LorId, bool> BannedEmotionStages = new Dictionary<LorId, bool>();
 
-        public static List<SkinNames> SkinParameters;
+        public static List<SkinNames> SkinParameters = new List<SkinNames>();
 
-        public static List<LorId> OnlySephirahStage;
+        public static List<LorId> OnlySephirahStage = new List<LorId>();
 
-        public static Dictionary<LorId, ExtraRewards> ExtraReward;
+        public static Dictionary<LorId, ExtraRewards> ExtraReward = new Dictionary<LorId, ExtraRewards>();
 
-        public static List<LorId> BannedEmotionSelectionUnit;
+        public static List<LorId> BannedEmotionSelectionUnit = new List<LorId>();
 
-        public static List<Tuple<LorId, List<LorId>>> UniquePassives;
+        public static List<Tuple<LorId, List<LorId>>> UniquePassives = new List<Tuple<LorId, List<LorId>>>(); 
 
-        public static List<Tuple<LorId, LorId>> ExtraConditionPassives;
+        public static List<Tuple<LorId, LorId>> ExtraConditionPassives = new List<Tuple<LorId, LorId>>();
 
-        public static List<Tuple<LorId, LorId>> ChainRelease;
-        public static List<LorId> ExtraMotions;
-        public static List<LorId> BookList;
-        public static List<LorId> EmotionExcludePassive;
-        public static Dictionary<LorId, List<SephirahType>> UniqueUnitStages;
-        public static List<Tuple<LorId, List<LorId>>> DualDeckPassive;
-        public static List<LorId> MultiDeckPassiveIds;
-        public static List<Tuple<LorId, LorId, List<string>>> MultiDeckLabels;
-        public static List<LorId> MultiDeckUnits;
-        public static int EgoEmotionLevel;
+        public static List<Tuple<LorId, LorId>> ChainRelease = new List<Tuple<LorId, LorId>>();
+        public static List<LorId> ExtraMotions = new List<LorId>();
+        public static List<LorId> BookList = new List<LorId>();
+        public static List<LorId> EmotionExcludePassive = new List<LorId>();
+        public static Dictionary<LorId, List<SephirahType>> UniqueUnitStages = new Dictionary<LorId, List<SephirahType>>();
+        public static List<Tuple<LorId, List<LorId>>> DualDeckPassive = new List<Tuple<LorId, List<LorId>>>();
+        public static List<LorId> MultiDeckPassiveIds = new List<LorId>();
+        public static List<Tuple<LorId, LorId, List<string>>> MultiDeckLabels = new List<Tuple<LorId, LorId, List<string>>>();
+        public static List<LorId> MultiDeckUnits = new List<LorId>();
         public static bool ChangedMultiView = false;
     }
 }

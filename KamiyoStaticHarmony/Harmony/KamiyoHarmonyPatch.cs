@@ -540,7 +540,6 @@ namespace KamiyoStaticHarmony.Harmony
                                                                                __instance.currentunit.bookItem.BookId ==
                                                                                x.Item2)
                     ?.Item3;
-                Debug.LogError(labels?.Count.ToString());
                 ModParameters.ChangedMultiView = true;
                 if (__instance.currentunit.bookItem.GetCurrentDeckIndex() > 1)
                     __instance.currentunit.ReEquipDeck();
@@ -582,6 +581,13 @@ namespace KamiyoStaticHarmony.Harmony
                          !Singleton<BookInventoryModel>.Instance.GetBookListAll().Exists(x =>
                              x.GetBookClassInfoId() == keypageId)))
                 __instance.CreateBook(keypageId);
+        }
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(UISpriteDataManager), "GetStoryIcon")]
+        public static void UISpriteDataManager_GetStoryIcon(ref string story)
+        {
+            if (story.Contains("Binah_Se21341"))
+                story = "Chapter1";
         }
     }
 }

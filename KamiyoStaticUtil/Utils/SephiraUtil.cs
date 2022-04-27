@@ -19,7 +19,7 @@ namespace KamiyoStaticUtil.Utils
             if (currentUnit == null) return;
             if (!ModParameters.DynamicSephirahNames.ContainsKey(bookDataModel.ClassInfo.id)) return;
             var mainItem =
-                ModParameters.DynamicSephirahNames.FirstOrDefault(x => x.Key == bookDataModel.ClassInfo.id.id);
+                ModParameters.DynamicSephirahNames.FirstOrDefault(x => x.Key == bookDataModel.ClassInfo.id);
             if (mainItem.Value.Item2 == currentUnit.OwnerSephirah && !currentUnit.isSephirah)
             {
                 button_Equip.interactable = false;

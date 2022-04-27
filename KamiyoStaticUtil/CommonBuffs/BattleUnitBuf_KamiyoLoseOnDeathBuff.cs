@@ -8,6 +8,7 @@ namespace KamiyoStaticUtil.CommonBuffs
         {
             stack = 0;
         }
+
         public override int paramInBufDesc => 0;
         protected override string keywordId => "KamiyoLoseOnDeathBuff";
         protected override string keywordIconId => "KamiyoLoseOnDeathBuff";

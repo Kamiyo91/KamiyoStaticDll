@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using KamiyoStaticBLL.MechUtilBaseModels;
-using KamiyoStaticBLL.Models;
 using KamiyoStaticUtil.CommonBuffs;
 using KamiyoStaticUtil.Utils;
 using LOR_XML;
@@ -25,7 +24,8 @@ namespace KamiyoStaticUtil.BaseClass
             _model.Owner.bufListDetail.AddBufWithoutDuplication(new BattleUnitBuf_KamiyoImmortalUntilRoundEnd());
             _model.Owner.SetHp(_model.SetHp);
             UnitUtil.UnitReviveAndRecovery(_model.Owner, 0, _model.RecoverLightOnSurvive);
-            _model.Owner.bufListDetail.AddBufWithoutDuplication(new BattleUnitBuf_KamiyoImmunityToStatusAlimentUntilRoundEnd());
+            _model.Owner.bufListDetail.AddBufWithoutDuplication(
+                new BattleUnitBuf_KamiyoImmunityToStatusAlimentUntilRoundEnd());
             if (_model.HasSurviveAbDialog)
                 UnitUtil.BattleAbDialog(_model.Owner.view.dialogUI, _model.SurviveAbDialogList,
                     _model.SurviveAbDialogColor);
@@ -69,29 +69,29 @@ namespace KamiyoStaticUtil.BaseClass
             _model.EgoActivated = true;
         }
 
-        public virtual void ChangeToEgoMap(LorId cardId)
-        {
-            if (cardId != _model.EgoAttackCardId ||
-                SingletonBehavior<BattleSceneRoot>.Instance.currentMapObject.isEgo) return;
-            _model.MapUsed = true;
-            MapUtil.ChangeMap(new MapModel
-            {
-                Stage = _model.EgoMapName,
-                StageIds = _model.OriginalMapStageIds,
-                OneTurnEgo = true,
-                IsPlayer = true,
-                Component = _model.EgoMapType,
-                Bgy = _model.BgY ?? 0.5f,
-                Fy = _model.FlY ?? 407.5f / 1080f
-            });
-        }
+        //public virtual void ChangeToEgoMap(LorId cardId)
+        //{
+        //    if (cardId != _model.EgoAttackCardId ||
+        //        SingletonBehavior<BattleSceneRoot>.Instance.currentMapObject.isEgo) return;
+        //    _model.MapUsed = true;
+        //    MapUtil.ChangeMap(new MapModel
+        //    {
+        //        Stage = _model.EgoMapName,
+        //        StageIds = _model.OriginalMapStageIds,
+        //        OneTurnEgo = true,
+        //        IsPlayer = true,
+        //        Component = _model.EgoMapType,
+        //        Bgy = _model.BgY ?? 0.5f,
+        //        Fy = _model.FlY ?? 407.5f / 1080f
+        //    });
+        //}
 
-        public virtual void ReturnFromEgoMap()
-        {
-            if (!_model.MapUsed) return;
-            _model.MapUsed = false;
-            MapUtil.ReturnFromEgoMap(_model.EgoMapName, _model.OriginalMapStageIds);
-        }
+        //public virtual void ReturnFromEgoMap()
+        //{
+        //    if (!_model.MapUsed) return;
+        //    _model.MapUsed = false;
+        //    MapUtil.ReturnFromEgoMap(_model.EgoMapName, _model.OriginalMapStageIds);
+        //}
 
         public virtual void DoNotChangeSkinOnEgo()
         {

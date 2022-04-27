@@ -269,9 +269,9 @@ namespace KamiyoStaticUtil.Utils
             {
                 Debug.LogError("Something failed while changing language");
             }
-
         }
-        public static void AddLocalLocalize(string path,string packageId)
+
+        public static void AddLocalLocalize(string path, string packageId)
         {
             try
             {
@@ -521,6 +521,7 @@ namespace KamiyoStaticUtil.Utils
                 Debug.LogError("Something failed while loading the language");
             }
         }
+
         public static void RemoveError()
         {
             Singleton<ModContentManager>.Instance.GetErrorLogs().RemoveAll(x => new List<string>
@@ -528,7 +529,10 @@ namespace KamiyoStaticUtil.Utils
                 "0Harmony",
                 "Mono.Cecil",
                 "MonoMod.RuntimeDetour",
-                "MonoMod.Utils"
+                "MonoMod.Utils",
+                "0KamiyoStaticHarmony",
+                "KamiyoStaticBLL",
+                "KamiyoStaticUtil"
             }.Exists(y => x.Contains("The same assembly name already exists. : " + y)));
         }
     }

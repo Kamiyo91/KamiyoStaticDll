@@ -24,5 +24,5 @@ namespace KamiyoStaticUtil.CommonBuffs
             _owner.cardSlotDetail.RecoverPlayPoint(_owner.cardSlotDetail.GetMaxPlayPoint());
             UnitUtil.DrawUntilX(_owner, 6);
         }
-}
+    }
 }

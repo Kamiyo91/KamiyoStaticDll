@@ -11,6 +11,7 @@ using UI;
 using UnityEngine;
 using UnityEngine.UI;
 using Workshop;
+using Object = UnityEngine.Object;
 
 namespace KamiyoStaticHarmony.Harmony
 {
@@ -61,8 +62,10 @@ namespace KamiyoStaticHarmony.Harmony
         [HarmonyPatch(typeof(UIBattleSettingPanel), "SetToggles")]
         public static void UIBattleSettingPanel_SetToggles(UIBattleSettingPanel __instance)
         {
-            if (!ModParameters.PackageIds.Contains(Singleton<StageController>.Instance.GetStageModel().ClassInfo.id.packageId)) return;
-            if (!ModParameters.PreBattleUnits.Exists(x => x.Item1 == Singleton<StageController>.Instance.GetStageModel().ClassInfo
+            if (!ModParameters.PackageIds.Contains(Singleton<StageController>.Instance.GetStageModel().ClassInfo.id
+                    .packageId)) return;
+            if (!ModParameters.PreBattleUnits.Exists(x => x.Item1 == Singleton<StageController>.Instance.GetStageModel()
+                    .ClassInfo
                     .id)) return;
             foreach (var currentAvailbleUnitslot in __instance.currentAvailbleUnitslots)
             {
@@ -104,13 +107,14 @@ namespace KamiyoStaticHarmony.Harmony
             if (!ModParameters.PackageIds.Contains(stage.ClassInfo.id.packageId)) return;
             if (!ModParameters.PreBattleUnits.Exists(x => x.Item1 == stage.ClassInfo.id)) return;
             var sephirahTypes = ModParameters.PreBattleUnits
-                    .FirstOrDefault(x => x.Item1 == stage.ClassInfo.id);
+                .FirstOrDefault(x => x.Item1 == stage.ClassInfo.id);
             if (sephirahTypes == null) return;
             if (sephirahTypes.Item3.Contains(__instance.Sephirah)) ____unitList.Clear();
             switch (sephirahTypes.Item4)
             {
                 case PreBattleUnitSpecialCases.CustomUnits:
-                    UnitUtil.AddCustomUnits(__instance, stage, ____unitList, stage.ClassInfo.id, stage.ClassInfo.id.packageId);
+                    UnitUtil.AddCustomUnits(__instance, stage, ____unitList, stage.ClassInfo.id,
+                        stage.ClassInfo.id.packageId);
                     break;
                 case PreBattleUnitSpecialCases.Sephirah4:
                     UnitUtil.Add4SephirahUnits(stage, ____unitList);
@@ -118,7 +122,6 @@ namespace KamiyoStaticHarmony.Harmony
                 default:
                     return;
             }
-
         }
 
         [HarmonyPrefix]
@@ -141,7 +144,8 @@ namespace KamiyoStaticHarmony.Harmony
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(UnitDataModel), "EquipBook")]
-        public static void UnitDataModel_EquipBookPrefix(UnitDataModel __instance, BookModel newBook, bool force, ref BookModel __state)
+        public static void UnitDataModel_EquipBookPrefix(UnitDataModel __instance, BookModel newBook, bool force,
+            ref BookModel __state)
         {
             if (force) return;
             __state = newBook;
@@ -155,7 +159,8 @@ namespace KamiyoStaticHarmony.Harmony
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(UnitDataModel), "EquipBook")]
-        public static void UnitDataModel_EquipBookPostfix(UnitDataModel __instance, BookModel newBook, bool isEnemySetting, bool force, BookModel __state)
+        public static void UnitDataModel_EquipBookPostfix(UnitDataModel __instance, BookModel newBook,
+            bool isEnemySetting, bool force, BookModel __state)
         {
             if (force) return;
             if (!ModParameters.PackageIds.Contains(newBook.ClassInfo.workshopID)) return;
@@ -178,6 +183,7 @@ namespace KamiyoStaticHarmony.Harmony
                 __instance.EquipBook(__state, isEnemySetting, true);
                 return;
             }
+
             if (!ModParameters.DynamicNames.ContainsKey(newBook.ClassInfo.id)) return;
             if (UnitUtil.CheckSkinUnitData(__instance)) return;
             if (!ModParameters.CustomSkinTrue.Contains(newBook.ClassInfo.id))
@@ -201,6 +207,19 @@ namespace KamiyoStaticHarmony.Harmony
                 return;
             }
 
+            var passiveDeck =
+                ModParameters.DualDeckPassive.FirstOrDefault(x =>
+                    x.Item1 == targetpassive.originData.currentpassive.id);
+            if (passiveDeck != null && !__instance.GetPassiveModelList()
+                    .Exists(x => passiveDeck.Item2.Contains(x.reservedData.currentpassive.id)) &&
+                (__instance.ClassInfo.categoryList.Contains(BookCategory.DeckFixed) ||
+                 __instance.ClassInfo.optionList.Contains(BookOption.MultiDeck) || __instance.IsMultiDeck()))
+            {
+                haspassiveState = GivePassiveState.Lock;
+                __result = false;
+                return;
+            }
+
             var passiveItemExtra =
                 ModParameters.ExtraConditionPassives.FirstOrDefault(x =>
                     x.Item1 == targetpassive.originData.currentpassive.id);
@@ -208,6 +227,31 @@ namespace KamiyoStaticHarmony.Harmony
                     .Exists(x => passiveItemExtra.Item2 == x.reservedData.currentpassive.id)) return;
             haspassiveState = GivePassiveState.Lock;
             __result = false;
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(BookModel), "IsMultiDeck")]
+        public static void BookModel_IsMultiDeck(BookModel __instance, ref bool __result)
+        {
+            try
+            {
+                __result = __instance.GetPassiveInfoList()
+                               .Exists(x => ModParameters.MultiDeckPassiveIds.Contains(x.passive.id)) ||
+                           __result;
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(UILibrarianEquipDeckPanel), "IsMultiDeck")]
+        public static void UILibrarianEquipDeckPanel_IsMultiDeck(UILibrarianEquipDeckPanel __instance,
+            ref bool __result)
+        {
+            __result = __instance.Unitdata != null && __instance.Unitdata.bookItem.GetPassiveInfoList()
+                .Exists(x => ModParameters.MultiDeckPassiveIds.Contains(x.passive.id)) || __result;
         }
 
         [HarmonyPrefix]
@@ -230,7 +274,8 @@ namespace KamiyoStaticHarmony.Harmony
         {
             var passiveItem =
                 ModParameters.ChainRelease.FirstOrDefault(x =>
-                    unequipbook.GetPassiveModelList().Exists(y => x.Item1 == y.originData.currentpassive.id));
+                    unequipbook.GetPassiveModelList().Exists(y =>
+                        x.Item1 == y.originData.currentpassive.id || x.Item1 == y.reservedData.currentpassive.id));
             if (passiveItem == null) return;
             try
             {
@@ -245,6 +290,25 @@ namespace KamiyoStaticHarmony.Harmony
             {
                 // ignored
             }
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(PassiveModel), "ReleaseSuccesionGivePassive")]
+        public static void PassiveModel_ReleaseSuccesionGivePassive(PassiveModel __instance)
+        {
+            var currentPassive = __instance.originData.currentpassive.id != new LorId(9999999)
+                ? __instance.originData
+                : __instance.reservedData;
+            var passiveItem =
+                ModParameters.ChainRelease.FirstOrDefault(x => x.Item1 == currentPassive.currentpassive.id);
+            if (passiveItem == null) return;
+            var book = Singleton<BookInventoryModel>.Instance.GetBookByInstanceId(currentPassive.givePassiveBookId);
+            var passiveModel = book != null
+                ? book.GetPassiveModelList().FirstOrDefault(x =>
+                    x.originData.currentpassive.id == passiveItem.Item2)
+                : Singleton<BookInventoryModel>.Instance.GetBlackSilenceBook().GetPassiveModelList().FirstOrDefault(x =>
+                    x.originData.currentpassive.id == passiveItem.Item2);
+            passiveModel?.ReleaseSuccesionReceivePassive(true);
         }
 
         [HarmonyPostfix]
@@ -320,15 +384,17 @@ namespace KamiyoStaticHarmony.Harmony
         {
             var skin = ModParameters.SkinNameIds.Find(x => x.Item1.Contains(charName));
             if (skin == null) return;
-            if (typeof(BattleUnitView).GetField("_skinInfo", AccessTools.all)?.GetValue(__instance) is BattleUnitView.SkinInfo skinInfo)
+            if (typeof(BattleUnitView).GetField("_skinInfo", AccessTools.all)?.GetValue(__instance) is
+                BattleUnitView.SkinInfo skinInfo)
             {
                 skinInfo.state = BattleUnitView.SkinState.Changed;
                 skinInfo.skinName = charName;
             }
+
             var currentMotionDetail = __instance.charAppearance.GetCurrentMotionDetail();
             __instance.DestroySkin();
             var gameObject =
-                UnityEngine.Object.Instantiate(
+                Object.Instantiate(
                     Singleton<AssetBundleManagerRemake>.Instance.LoadCharacterPrefab(charName, "",
                         out var resourceName), __instance.model.view.characterRotationCenter);
             var workshopBookSkinData =
@@ -401,13 +467,15 @@ namespace KamiyoStaticHarmony.Harmony
             for (var i = list.Count; i < __instance.GetCardUIList().Count; i++)
                 __instance.GetCardUIList()[i].gameObject.SetActive(false);
         }
+
         [HarmonyPostfix]
         [HarmonyPatch(typeof(UICharacterListPanel), "RefreshBattleUnitDataModel")]
         public static void RefreshBattleUnitDataModel(UICharacterListPanel __instance,
             UnitDataModel data)
         {
             if (Singleton<StageController>.Instance.GetStageModel() == null ||
-                !ModParameters.PackageIds.Contains(Singleton<StageController>.Instance.GetStageModel().ClassInfo.id.packageId) ||
+                !ModParameters.PackageIds.Contains(Singleton<StageController>.Instance.GetStageModel().ClassInfo.id
+                    .packageId) ||
                 !ModParameters.UniqueUnitStages.ContainsKey(Singleton<StageController>.Instance.GetStageModel()
                     .ClassInfo.id)) return;
             var slot =
@@ -435,6 +503,7 @@ namespace KamiyoStaticHarmony.Harmony
             var uiOrigin = __instance as UIOriginEquipPageSlot;
             SephiraUtil.SetOperationPanel(uiOrigin, ___button_Equip, ___txt_equipButton, ____bookDataModel);
         }
+
         [HarmonyPrefix]
         [HarmonyPatch(typeof(UILibrarianAppearanceInfoPanel), "OnClickCustomizeButton")]
         public static bool UILibrarianAppearanceInfoPanel_OnClickCustomizeButton(
@@ -447,6 +516,57 @@ namespace KamiyoStaticHarmony.Harmony
                     x.Key.Equals(ModParameters.DynamicSephirahNames
                         .FirstOrDefault(y => __instance.unitData.bookItem.BookId == y.Key).Value.Item1)).Value.Desc);
             return false;
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(UIEquipDeckCardList), "SetDeckLayout")]
+        public static void UIEquipDeckCardList_SetDeckLayout(UIEquipDeckCardList __instance,
+            GameObject ___multiDeckLayout)
+        {
+            if (ModParameters.MultiDeckUnits.Contains(__instance.currentunit.bookItem.BookId) || __instance
+                    .currentunit.bookItem.GetPassiveInfoList().Exists(x =>
+                        ModParameters.MultiDeckPassiveIds.Contains(x.passive.id)))
+            {
+                var labels = ModParameters.MultiDeckLabels.FirstOrDefault(x => __instance
+                                                                                   .currentunit.bookItem
+                                                                                   .GetPassiveInfoList()
+                                                                                   .Exists(y =>
+                                                                                       y.passive.id == x.Item1) ||
+                                                                               __instance.currentunit.bookItem.BookId ==
+                                                                               x.Item2)
+                    ?.Item3;
+                ModParameters.ChangedMultiView = true;
+                if (__instance.currentunit.bookItem.GetCurrentDeckIndex() > 1)
+                    __instance.currentunit.ReEquipDeck();
+                SkinUtil.PrepareMultiDeckUI(___multiDeckLayout, labels);
+            }
+            else if (!ModParameters.MultiDeckUnits.Contains(__instance.currentunit.bookItem.BookId) &&
+                     !__instance.currentunit.bookItem.GetPassiveModelList().Exists(x =>
+                         ModParameters.MultiDeckPassiveIds.Contains(x.originData.currentpassive.id)) &&
+                     ModParameters.ChangedMultiView)
+            {
+                ModParameters.ChangedMultiView = false;
+                SkinUtil.RevertMultiDeckUI(___multiDeckLayout);
+                __instance.GetType().GetMethod("SetDeckLayout", AccessTools.all)
+                    ?.Invoke(__instance, Array.Empty<object>());
+            }
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(UIPassiveSuccessionPopup), "Close")]
+        public static void UIPassiveSuccessionPopup_Close(UIPassiveSuccessionPopup __instance)
+        {
+            if (__instance.CurrentBookModel == null) return;
+            try
+            {
+                SingletonBehavior<UIEquipDeckCardList>.Instance.GetType()
+                    .GetMethod("SetDeckLayout", AccessTools.all)
+                    ?.Invoke(SingletonBehavior<UIEquipDeckCardList>.Instance, Array.Empty<object>());
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
         }
     }
 }

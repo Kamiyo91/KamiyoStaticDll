@@ -13,9 +13,12 @@ namespace KamiyoStaticHarmony.Harmony
         private static int _coinsToRemove;
 
         private static Predicate<BattleUnitModel> Match => x => x.passiveDetail.PassiveList.Exists(y =>
-            ModParameters.EmotionExcludePassive.Contains(y.id)) ||
-            ModParameters.BannedEmotionStages.ContainsKey(Singleton<StageController>.Instance.GetStageModel().ClassInfo
-                .id);
+                                                                    ModParameters.EmotionExcludePassive
+                                                                        .Contains(y.id)) ||
+                                                                ModParameters.BannedEmotionStages.ContainsKey(
+                                                                    Singleton<StageController>.Instance.GetStageModel()
+                                                                        .ClassInfo
+                                                                        .id);
 
         [HarmonyTranspiler]
         public static IEnumerable<CodeInstruction> Patch(IEnumerable<CodeInstruction> codeInstructions, ILGenerator iL)

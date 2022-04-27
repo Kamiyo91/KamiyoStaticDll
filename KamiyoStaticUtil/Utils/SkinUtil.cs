@@ -132,6 +132,7 @@ namespace KamiyoStaticUtil.Utils
                 result = ModParameters.ArtWorks[sprite.Key];
                 return;
             }
+
             var defaultSprite =
                 ModParameters.DefaultSpritePreviewChange.FirstOrDefault(x => x.Value.Contains(bookId));
             if (!string.IsNullOrEmpty(defaultSprite.Key) && defaultSprite.Value.Any())
@@ -221,6 +222,48 @@ namespace KamiyoStaticUtil.Utils
             }
 
             return list;
+        }
+
+        public static void PrepareMultiDeckUI(GameObject multiDeckUI, List<string> labels)
+        {
+            var uiButtons = multiDeckUI.GetComponentsInChildren<UICustomTabButton>(true);
+            var num = 0;
+            foreach (var uiButton in uiButtons)
+            {
+                if (labels.Count <= num + 1 && !string.IsNullOrEmpty(labels[num]))
+                    uiButton.TabName.text = ModParameters.EffectTexts[labels[num]].Desc;
+                else
+                    uiButton.gameObject.SetActive(false);
+                num++;
+            }
+        }
+
+        public static void RevertMultiDeckUI(GameObject multiDeckUI)
+        {
+            var uiButtons = multiDeckUI.GetComponentsInChildren<UICustomTabButton>(true);
+            foreach (var uiButton in uiButtons)
+                uiButton.gameObject.SetActive(true);
+            var num = 0;
+            foreach (var uiButton in uiButtons)
+            {
+                switch (num)
+                {
+                    case 0:
+                        uiButton.TabName.text = TextDataModel.GetText("ui_slash_form");
+                        break;
+                    case 1:
+                        uiButton.TabName.text = TextDataModel.GetText("ui_penetrate_form");
+                        break;
+                    case 2:
+                        uiButton.TabName.text = TextDataModel.GetText("ui_blunt_form");
+                        break;
+                    case 3:
+                        uiButton.TabName.text = TextDataModel.GetText("ui_guard_form");
+                        break;
+                }
+
+                num++;
+            }
         }
     }
 }

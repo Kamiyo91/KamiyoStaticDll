@@ -11,8 +11,10 @@ namespace KamiyoStaticBLL.Models
         public static Dictionary<string, Sprite> ArtWorks;
         public static List<string> Path;
         public static string Language;
+
         public static readonly Dictionary<string, EffectTextModel> EffectTexts =
             new Dictionary<string, EffectTextModel>();
+
         public static Dictionary<string, string> NameTexts;
 
         public static List<Tuple<string, List<LorId>, LorId>> OnlyCardKeywords;
@@ -36,7 +38,8 @@ namespace KamiyoStaticBLL.Models
 
         public static Dictionary<string, List<LorId>> DefaultSpritePreviewChange;
 
-        public static List<Tuple<LorId, List<PreBattleUnitModel>,List<SephirahType>,PreBattleUnitSpecialCases>> PreBattleUnits;
+        public static List<Tuple<LorId, List<PreBattleUnitModel>, List<SephirahType>, PreBattleUnitSpecialCases>>
+            PreBattleUnits;
 
         public static Dictionary<LorId, bool> BannedEmotionStages;
 
@@ -57,7 +60,11 @@ namespace KamiyoStaticBLL.Models
         public static List<LorId> BookList;
         public static List<LorId> EmotionExcludePassive;
         public static Dictionary<LorId, List<SephirahType>> UniqueUnitStages;
-
+        public static List<Tuple<LorId, List<LorId>>> DualDeckPassive;
+        public static List<LorId> MultiDeckPassiveIds;
+        public static List<Tuple<LorId, LorId, List<string>>> MultiDeckLabels;
+        public static List<LorId> MultiDeckUnits;
         public static int EgoEmotionLevel;
+        public static bool ChangedMultiView = false;
     }
 }

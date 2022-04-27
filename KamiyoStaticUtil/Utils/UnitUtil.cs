@@ -297,7 +297,7 @@ namespace KamiyoStaticUtil.Utils
         }
 
         public static void AddCustomUnits(StageLibraryFloorModel instance, StageModel stage,
-            List<UnitBattleDataModel> unitList, LorId dictionaryId,string packageId)
+            List<UnitBattleDataModel> unitList, LorId dictionaryId, string packageId)
         {
             var stageParameters = ModParameters.PreBattleUnits.FirstOrDefault(x => x.Item1 == dictionaryId);
             if (stageParameters == null) return;
@@ -324,6 +324,7 @@ namespace KamiyoStaticUtil.Utils
                 unitList.Add(unitBattleDataModel);
             }
         }
+
         public static void Add4SephirahUnits(StageModel stage,
             List<UnitBattleDataModel> unitList)
         {
@@ -344,6 +345,7 @@ namespace KamiyoStaticUtil.Utils
             };
             unitList?.AddRange(units);
         }
+
         private static UnitBattleDataModel InitUnitDefault(StageModel stage, UnitDataModel data)
         {
             var unitBattleDataModel = new UnitBattleDataModel(stage, data);
@@ -387,6 +389,7 @@ namespace KamiyoStaticUtil.Utils
             var method = typeof(BattleDialogUI).GetMethod("AbnormalityDlgRoutine", AccessTools.all);
             instance.StartCoroutine(method.Invoke(instance, Array.Empty<object>()) as IEnumerator);
         }
+
         public static List<UnitBattleDataModel> UnitsToRecover(StageModel stageModel, UnitDataModel data)
         {
             var list = new List<UnitBattleDataModel>();
@@ -396,6 +399,7 @@ namespace KamiyoStaticUtil.Utils
                     .Where(x => x.unitData == data));
             return list;
         }
+
         public static List<int> GetSamuraiGhostIndex(int originalUnitIndex)
         {
             switch (originalUnitIndex)

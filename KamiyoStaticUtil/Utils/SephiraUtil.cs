@@ -18,7 +18,8 @@ namespace KamiyoStaticUtil.Utils
             var currentUnit = UI.UIController.Instance.CurrentUnit;
             if (currentUnit == null) return;
             if (!ModParameters.DynamicSephirahNames.ContainsKey(bookDataModel.ClassInfo.id)) return;
-            var mainItem = ModParameters.DynamicSephirahNames.FirstOrDefault(x => x.Key == bookDataModel.ClassInfo.id.id);
+            var mainItem =
+                ModParameters.DynamicSephirahNames.FirstOrDefault(x => x.Key == bookDataModel.ClassInfo.id.id);
             if (mainItem.Value.Item2 == currentUnit.OwnerSephirah && !currentUnit.isSephirah)
             {
                 button_Equip.interactable = false;
@@ -30,11 +31,13 @@ namespace KamiyoStaticUtil.Utils
             button_Equip.interactable = true;
             txt_equipButton.text = TextDataModel.GetText("ui_bookinventory_equipbook", Array.Empty<object>());
         }
+
         private static bool IsLockedCharacter(UnitDataModel unitData)
         {
             return unitData.isSephirah && (unitData.OwnerSephirah == SephirahType.Binah ||
                                            unitData.OwnerSephirah == SephirahType.Keter);
         }
+
         public static void PrepareBlackSilenceDeck(BattleUnitModel owner)
         {
             var furiosoCard = owner.personalEgoDetail.GetCardAll()

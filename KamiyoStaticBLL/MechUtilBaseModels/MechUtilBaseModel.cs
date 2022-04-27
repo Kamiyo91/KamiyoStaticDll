@@ -13,7 +13,7 @@ namespace KamiyoStaticBLL.MechUtilBaseModels
         public int SetHp { get; set; }
         public float? BgY { get; set; }
         public float? FlY { get; set; }
-        public List<int> OriginalMapStageIds { get; set; }
+        public List<LorId> OriginalMapStageIds { get; set; }
         public bool Survive { get; set; }
         public bool HasEgo { get; set; }
         public bool HasEgoAttack { get; set; }

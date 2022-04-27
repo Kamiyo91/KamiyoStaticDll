@@ -574,5 +574,14 @@ namespace KamiyoStaticHarmony.Harmony
                 // ignored
             }
         }
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(BookInventoryModel), "LoadFromSaveData")]
+        public static void BookInventoryModel_LoadFromSaveData(BookInventoryModel __instance)
+        {
+            foreach (var keypageId in ModParameters.KeypageIds.Where(keypageId =>
+                         !Singleton<BookInventoryModel>.Instance.GetBookListAll().Exists(x =>
+                             x.GetBookClassInfoId() == keypageId)))
+                __instance.CreateBook(keypageId);
+        }
     }
 }

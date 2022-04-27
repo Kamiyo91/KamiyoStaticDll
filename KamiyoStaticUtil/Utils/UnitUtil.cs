@@ -497,9 +497,18 @@ namespace KamiyoStaticUtil.Utils
                 .GetField("_cardInfoTable", AccessTools.all).GetValue(instance);
             var list = (List<DiceCardXmlInfo>)instance.GetType()
                 .GetField("_cardInfoList", AccessTools.all).GetValue(instance);
+            foreach (var item in dictionary.Where(x => string.IsNullOrEmpty(x.Key.packageId))
+                         .Where(item => ModParameters.OriginalNoInventoryCardList.Contains(item.Key))
+                         .ToList())
+                SetCustomCardOption(CardOption.NoInventory, item.Key,false, ref dictionary, ref list);
             var onlyPageCardList = GetAllOnlyCardsId();
             foreach (var item in dictionary.Where(x => x.Key.packageId == packageId).ToList())
             {
+                if (ModParameters.NoInventoryCardList.Contains(item.Key))
+                {
+                    SetCustomCardOption(CardOption.NoInventory, item.Key, false, ref dictionary, ref list);
+                    continue;
+                }
                 if (ModParameters.PersonalCardList.Contains(item.Key))
                 {
                     SetCustomCardOption(CardOption.Personal, item.Key, false, ref dictionary, ref list);

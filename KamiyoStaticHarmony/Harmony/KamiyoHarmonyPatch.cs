@@ -338,7 +338,7 @@ namespace KamiyoStaticHarmony.Harmony
         [HarmonyPatch(typeof(UICustomizePopup), "OnClickSave")]
         public static void UICustomizePopup_OnClickSave(UICustomizePopup __instance)
         {
-            if (ModParameters.PackageIds.Contains(__instance.SelectedUnit.bookItem.ClassInfo.id.packageId) ||
+            if (!ModParameters.PackageIds.Contains(__instance.SelectedUnit.bookItem.ClassInfo.id.packageId) ||
                 !ModParameters.DynamicNames.ContainsKey(__instance.SelectedUnit.bookItem.ClassInfo.id)) return;
             var tempName =
                 (string)__instance.SelectedUnit.GetType().GetField("_tempName", AccessTools.all)
@@ -522,7 +522,7 @@ namespace KamiyoStaticHarmony.Harmony
         public static bool UILibrarianAppearanceInfoPanel_OnClickCustomizeButton(
             UILibrarianAppearanceInfoPanel __instance)
         {
-            if (ModParameters.PackageIds.Contains(__instance.unitData.bookItem.BookId.packageId) ||
+            if (!ModParameters.PackageIds.Contains(__instance.unitData.bookItem.BookId.packageId) ||
                 !ModParameters.DynamicSephirahNames.ContainsKey(__instance.unitData.bookItem.BookId)) return true;
             UIAlarmPopup.instance.SetAlarmText(ModParameters.EffectTexts
                 .FirstOrDefault(x =>

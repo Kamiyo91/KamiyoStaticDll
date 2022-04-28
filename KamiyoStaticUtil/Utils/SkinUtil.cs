@@ -42,7 +42,7 @@ namespace KamiyoStaticUtil.Utils
                     typeof(CustomizingBookSkinLoader).GetField("_bookSkinData", AccessTools.all)
                             ?.GetValue(Singleton<CustomizingBookSkinLoader>.Instance) as
                         Dictionary<string, List<WorkshopSkinData>>;
-                foreach (var item in ModParameters.SkinParameters)
+                foreach (var item in ModParameters.SkinParameters.Where(x => x.PackageId == packageId))
                 {
                     var workshopSkinData =
                         dictionary?[packageId].Find(x => x.dataName.Contains(item.Name));
@@ -70,7 +70,7 @@ namespace KamiyoStaticUtil.Utils
             }
             catch (Exception)
             {
-                // ignored
+                Debug.LogError("Failed to load motions " + packageId);
             }
         }
 

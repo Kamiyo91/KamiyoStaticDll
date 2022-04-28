@@ -37,7 +37,8 @@ namespace KamiyoStaticUtil.Utils
             typeof(StageController).GetField("_mapChanged", AccessTools.all)
                 ?.SetValue(Singleton<StageController>.Instance, value);
         }
-        public static void LoadBoomEffect() 
+
+        public static void LoadBoomEffect()
         {
             var map = Util.LoadPrefab("InvitationMaps/InvitationMap_BlackSilence4",
                 SingletonBehavior<BattleSceneRoot>.Instance.transform);
@@ -50,6 +51,7 @@ namespace KamiyoStaticUtil.Utils
             Object.Destroy(ModParameters.BoomEffectMap);
             ModParameters.BoomEffectMap = null;
         }
+
         public static void GetArtWorks(DirectoryInfo dir)
         {
             if (dir.GetDirectories().Length != 0)

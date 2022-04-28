@@ -4,6 +4,7 @@ namespace KamiyoStaticBLL.Models
 {
     public class SkinNames
     {
+        public string PackageId { get; set; }
         public string Name { get; set; }
         public List<SkinParameters> SkinParameters { get; set; }
     }

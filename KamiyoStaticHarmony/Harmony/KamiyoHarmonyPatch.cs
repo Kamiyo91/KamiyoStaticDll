@@ -155,6 +155,7 @@ namespace KamiyoStaticHarmony.Harmony
                 __instance.ResetTempName();
                 __instance.customizeData.SetCustomData(true);
             }
+
             if (!ModParameters.DynamicSephirahNames.ContainsKey(__instance.bookItem.ClassInfo.id)) return;
             __instance.ResetTempName();
             __instance.customizeData.SetCustomData(true);
@@ -169,13 +170,11 @@ namespace KamiyoStaticHarmony.Harmony
             if (newBook == null || !ModParameters.PackageIds.Contains(newBook.ClassInfo.id.packageId)) return;
             if (ModParameters.SkinNameIds != null && ModParameters.SkinNameIds.Any(x =>
                     x.Item2.Contains(newBook.ClassInfo.id) && newBook.ClassInfo.CharacterSkin.Contains(x.Item1)))
-            {
                 newBook.ClassInfo.CharacterSkin = new List<string>
                 {
                     ModParameters.SkinNameIds.FirstOrDefault(x => newBook.ClassInfo.CharacterSkin.Contains(x.Item1))
                         ?.Item3
                 };
-            }
 
             if (__state != null && ModParameters.DynamicSephirahNames.ContainsKey(__state.ClassInfo.id))
             {
@@ -189,6 +188,7 @@ namespace KamiyoStaticHarmony.Harmony
                 __instance.EquipBook(__state, isEnemySetting, true);
                 return;
             }
+
             if (!ModParameters.DynamicNames.ContainsKey(newBook.ClassInfo.id)) return;
             if (UnitUtil.CheckSkinUnitData(__instance)) return;
             if (!ModParameters.CustomSkinTrue.Contains(newBook.ClassInfo.id))
@@ -277,17 +277,17 @@ namespace KamiyoStaticHarmony.Harmony
         [HarmonyPatch(typeof(BookModel), "UnEquipGivePassiveBook")]
         public static void BookModel_UnEquipGivePassiveBook(BookModel __instance, BookModel unequipbook)
         {
-            var passiveItem =
-                ModParameters.ChainRelease.FirstOrDefault(x =>
-                    unequipbook.GetPassiveModelList().Exists(y =>
-                        x.Item1 == y.originData.currentpassive.id || x.Item1 == y.reservedData.currentpassive.id));
-            if (passiveItem == null) return;
             try
             {
+                var passiveItem =
+                    ModParameters.ChainRelease.FirstOrDefault(x =>
+                        unequipbook.GetPassiveModelList().Exists(y =>
+                            x.Item1 == y.originData.currentpassive.id || x.Item1 == y.reservedData.currentpassive.id));
+                if (passiveItem == null) return;
                 var chainPassive = __instance.GetPassiveModelList()
-                    .FirstOrDefault(x =>
-                        x.reservedData.currentpassive.id == passiveItem.Item2 ||
-                        x.originData.currentpassive.id == passiveItem.Item2);
+                        .FirstOrDefault(x =>
+                            x.reservedData.currentpassive.id == passiveItem.Item2 ||
+                            x.originData.currentpassive.id == passiveItem.Item2);
                 if (chainPassive == null) return;
                 __instance.ReleasePassive(chainPassive);
             }
@@ -301,19 +301,27 @@ namespace KamiyoStaticHarmony.Harmony
         [HarmonyPatch(typeof(PassiveModel), "ReleaseSuccesionGivePassive")]
         public static void PassiveModel_ReleaseSuccesionGivePassive(PassiveModel __instance)
         {
-            var currentPassive = __instance.originData.currentpassive.id != new LorId(9999999)
-                ? __instance.originData
-                : __instance.reservedData;
-            var passiveItem =
-                ModParameters.ChainRelease.FirstOrDefault(x => x.Item1 == currentPassive.currentpassive.id);
-            if (passiveItem == null) return;
-            var book = Singleton<BookInventoryModel>.Instance.GetBookByInstanceId(currentPassive.givePassiveBookId);
-            var passiveModel = book != null
-                ? book.GetPassiveModelList().FirstOrDefault(x =>
-                    x.originData.currentpassive.id == passiveItem.Item2)
-                : Singleton<BookInventoryModel>.Instance.GetBlackSilenceBook().GetPassiveModelList().FirstOrDefault(x =>
-                    x.originData.currentpassive.id == passiveItem.Item2);
-            passiveModel?.ReleaseSuccesionReceivePassive(true);
+            try
+            {
+                var currentPassive = __instance.originData.currentpassive.id != new LorId(9999999)
+                    ? __instance.originData
+                    : __instance.reservedData;
+                var passiveItem =
+                    ModParameters.ChainRelease.FirstOrDefault(x => x.Item1 == currentPassive.currentpassive.id);
+                if (passiveItem == null) return;
+                var book = Singleton<BookInventoryModel>.Instance.GetBookByInstanceId(currentPassive.givePassiveBookId);
+                var passiveModel = book != null
+                    ? book.GetPassiveModelList().FirstOrDefault(x =>
+                        x.originData.currentpassive.id == passiveItem.Item2)
+                    : Singleton<BookInventoryModel>.Instance.GetBlackSilenceBook().GetPassiveModelList().FirstOrDefault(
+                        x =>
+                            x.originData.currentpassive.id == passiveItem.Item2);
+                passiveModel?.ReleaseSuccesionReceivePassive(true);
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
         }
 
         [HarmonyPostfix]
@@ -432,7 +440,7 @@ namespace KamiyoStaticHarmony.Harmony
             if (!ModParameters.PackageIds.Contains(stageId.packageId)) return;
             if (!ModParameters.ExtraReward.ContainsKey(stageId)) return;
             var message = false;
-            var parameters = ModParameters.ExtraReward.FirstOrDefault(y => y.Key.Equals(stageId.id));
+            var parameters = ModParameters.ExtraReward.FirstOrDefault(y => y.Key.Equals(stageId));
             if (parameters.Value.DroppedBooks != null)
             {
                 message = true;
@@ -573,6 +581,7 @@ namespace KamiyoStaticHarmony.Harmony
                 // ignored
             }
         }
+
         [HarmonyPostfix]
         [HarmonyPatch(typeof(BookInventoryModel), "LoadFromSaveData")]
         public static void BookInventoryModel_LoadFromSaveData(BookInventoryModel __instance)
@@ -582,12 +591,22 @@ namespace KamiyoStaticHarmony.Harmony
                              x.GetBookClassInfoId() == keypageId)))
                 __instance.CreateBook(keypageId);
         }
+
         [HarmonyPrefix]
         [HarmonyPatch(typeof(UISpriteDataManager), "GetStoryIcon")]
         public static void UISpriteDataManager_GetStoryIcon(ref string story)
         {
             if (story.Contains("Binah_Se21341"))
                 story = "Chapter1";
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(FarAreaEffect_Xiao_Taotie), "LateInit")]
+        public static void FarAreaEffect_Xiao_Taotie_LateInit(BattleUnitModel ____self)
+        {
+            if (!ModParameters.PackageIds.Contains(____self.UnitData.unitData.bookItem.ClassInfo.id.packageId)) return;
+            if (ModParameters.ExtraMotions.Contains(____self.UnitData.unitData.bookItem.ClassInfo.id))
+                ____self.view.charAppearance.ChangeMotion(ActionDetail.Guard);
         }
     }
 }

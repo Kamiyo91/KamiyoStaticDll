@@ -69,30 +69,6 @@ namespace KamiyoStaticUtil.BaseClass
             _model.EgoActivated = true;
         }
 
-        //public virtual void ChangeToEgoMap(LorId cardId)
-        //{
-        //    if (cardId != _model.EgoAttackCardId ||
-        //        SingletonBehavior<BattleSceneRoot>.Instance.currentMapObject.isEgo) return;
-        //    _model.MapUsed = true;
-        //    MapUtil.ChangeMap(new MapModel
-        //    {
-        //        Stage = _model.EgoMapName,
-        //        StageIds = _model.OriginalMapStageIds,
-        //        OneTurnEgo = true,
-        //        IsPlayer = true,
-        //        Component = _model.EgoMapType,
-        //        Bgy = _model.BgY ?? 0.5f,
-        //        Fy = _model.FlY ?? 407.5f / 1080f
-        //    });
-        //}
-
-        //public virtual void ReturnFromEgoMap()
-        //{
-        //    if (!_model.MapUsed) return;
-        //    _model.MapUsed = false;
-        //    MapUtil.ReturnFromEgoMap(_model.EgoMapName, _model.OriginalMapStageIds);
-        //}
-
         public virtual void DoNotChangeSkinOnEgo()
         {
             _model.SkinName = "";
@@ -126,11 +102,6 @@ namespace KamiyoStaticUtil.BaseClass
         public virtual void ForcedEgo()
         {
             _model.EgoActivated = true;
-        }
-
-        public virtual void SetVipUnit()
-        {
-            _model.Owner.bufListDetail.AddBufWithoutDuplication(new BattleUnitBuf_KamiyoLoseOnDeathBuff());
         }
 
         public virtual void ChangeEgoAbDialog(List<AbnormalityCardDialog> value)

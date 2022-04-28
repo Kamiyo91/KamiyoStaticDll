@@ -47,10 +47,11 @@ namespace KamiyoStaticUtil.Utils
                 {
                     Debug.LogError("Error loading Effect Texts");
                 }
+
                 try
                 {
                     files = new DirectoryInfo(item.path + "/Localize/" + ModParameters.Language + "/BattlesCards")
-                    .GetFiles();
+                        .GetFiles();
                     foreach (var t in files)
                         using (var stringReader2 = new StringReader(File.ReadAllText(t.FullName)))
                         {
@@ -89,10 +90,11 @@ namespace KamiyoStaticUtil.Utils
                 {
                     Debug.LogError("Error loading Battle Cards Texts");
                 }
+
                 try
                 {
                     files = new DirectoryInfo(item.path + "/Localize/" + ModParameters.Language + "/BattleDialog")
-                    .GetFiles();
+                        .GetFiles();
                     var dialogDictionary =
                         (Dictionary<string, BattleDialogRoot>)BattleDialogXmlList.Instance.GetType()
                             .GetField("_dictionary", AccessTools.all)
@@ -161,6 +163,7 @@ namespace KamiyoStaticUtil.Utils
                 {
                     Debug.LogError("Error loading Characters Name Texts");
                 }
+
                 try
                 {
                     files = new DirectoryInfo(item.path + "/Localize/" + ModParameters.Language + "/Books").GetFiles();
@@ -297,12 +300,13 @@ namespace KamiyoStaticUtil.Utils
                 {
                     Debug.LogError("Error loading Passive Desc Texts");
                 }
+
                 try
                 {
                     var cardAbilityDictionary = typeof(BattleCardAbilityDescXmlList)
-                        .GetField("_dictionary", AccessTools.all)
-                        ?.GetValue(Singleton<BattleCardAbilityDescXmlList>.Instance) as
-                    Dictionary<string, BattleCardAbilityDesc>;
+                            .GetField("_dictionary", AccessTools.all)
+                            ?.GetValue(Singleton<BattleCardAbilityDescXmlList>.Instance) as
+                        Dictionary<string, BattleCardAbilityDesc>;
                     files = new DirectoryInfo(item.path + "/Localize/" + ModParameters.Language +
                                               "/BattleCardAbilities").GetFiles();
                     foreach (var t in files)
@@ -355,10 +359,11 @@ namespace KamiyoStaticUtil.Utils
             {
                 Debug.LogError("Error loading Effect Texts");
             }
+
             try
             {
                 files = new DirectoryInfo(path + "/Localize/" + ModParameters.Language + "/BattlesCards")
-                .GetFiles();
+                    .GetFiles();
                 foreach (var t in files)
                     using (var stringReader2 = new StringReader(File.ReadAllText(t.FullName)))
                     {
@@ -397,10 +402,11 @@ namespace KamiyoStaticUtil.Utils
             {
                 Debug.LogError("Error loading Battle Cards Texts");
             }
+
             try
             {
                 files = new DirectoryInfo(path + "/Localize/" + ModParameters.Language + "/BattleDialog")
-                .GetFiles();
+                    .GetFiles();
                 var dialogDictionary =
                     (Dictionary<string, BattleDialogRoot>)BattleDialogXmlList.Instance.GetType()
                         .GetField("_dictionary", AccessTools.all)
@@ -469,6 +475,7 @@ namespace KamiyoStaticUtil.Utils
             {
                 Debug.LogError("Error loading Characters Name Texts");
             }
+
             try
             {
                 files = new DirectoryInfo(path + "/Localize/" + ModParameters.Language + "/Books").GetFiles();
@@ -605,12 +612,13 @@ namespace KamiyoStaticUtil.Utils
             {
                 Debug.LogError("Error loading Passive Desc Texts");
             }
+
             try
             {
                 var cardAbilityDictionary = typeof(BattleCardAbilityDescXmlList)
-                    .GetField("_dictionary", AccessTools.all)
-                    ?.GetValue(Singleton<BattleCardAbilityDescXmlList>.Instance) as
-                Dictionary<string, BattleCardAbilityDesc>;
+                        .GetField("_dictionary", AccessTools.all)
+                        ?.GetValue(Singleton<BattleCardAbilityDescXmlList>.Instance) as
+                    Dictionary<string, BattleCardAbilityDesc>;
                 files = new DirectoryInfo(path + "/Localize/" + ModParameters.Language +
                                           "/BattleCardAbilities").GetFiles();
                 foreach (var t in files)
@@ -640,7 +648,7 @@ namespace KamiyoStaticUtil.Utils
                 "Mono.Cecil",
                 "MonoMod.RuntimeDetour",
                 "MonoMod.Utils",
-                "KamiyoStaticHarmony",
+                "0KamiyoStaticHarmony",
                 "KamiyoStaticBLL",
                 "KamiyoStaticUtil"
             }.Exists(y => x.Contains("The same assembly name already exists. : " + y)));

@@ -21,7 +21,8 @@ namespace KamiyoStaticUtil.Utils
         {
             return faction == Faction.Player ? Faction.Enemy : Faction.Player;
         }
-        public static bool CantUseCardAfraid(BattleDiceCardModel card,string packageId)
+
+        public static bool CantUseCardAfraid(BattleDiceCardModel card, string packageId)
         {
             return card.XmlData.Spec.Ranged == CardRange.FarArea ||
                    card.XmlData.Spec.Ranged == CardRange.FarAreaEach || card.GetOriginCost() > 3 ||
@@ -500,7 +501,7 @@ namespace KamiyoStaticUtil.Utils
             foreach (var item in dictionary.Where(x => string.IsNullOrEmpty(x.Key.packageId))
                          .Where(item => ModParameters.OriginalNoInventoryCardList.Contains(item.Key))
                          .ToList())
-                SetCustomCardOption(CardOption.NoInventory, item.Key,false, ref dictionary, ref list);
+                SetCustomCardOption(CardOption.NoInventory, item.Key, false, ref dictionary, ref list);
             var onlyPageCardList = GetAllOnlyCardsId();
             foreach (var item in dictionary.Where(x => x.Key.packageId == packageId).ToList())
             {
@@ -509,6 +510,7 @@ namespace KamiyoStaticUtil.Utils
                     SetCustomCardOption(CardOption.NoInventory, item.Key, false, ref dictionary, ref list);
                     continue;
                 }
+
                 if (ModParameters.PersonalCardList.Contains(item.Key))
                 {
                     SetCustomCardOption(CardOption.Personal, item.Key, false, ref dictionary, ref list);

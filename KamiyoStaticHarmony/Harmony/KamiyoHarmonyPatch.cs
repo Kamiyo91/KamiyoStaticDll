@@ -285,9 +285,9 @@ namespace KamiyoStaticHarmony.Harmony
                             x.Item1 == y.originData.currentpassive.id || x.Item1 == y.reservedData.currentpassive.id));
                 if (passiveItem == null) return;
                 var chainPassive = __instance.GetPassiveModelList()
-                        .FirstOrDefault(x =>
-                            x.reservedData.currentpassive.id == passiveItem.Item2 ||
-                            x.originData.currentpassive.id == passiveItem.Item2);
+                    .FirstOrDefault(x =>
+                        x.reservedData.currentpassive.id == passiveItem.Item2 ||
+                        x.originData.currentpassive.id == passiveItem.Item2);
                 if (chainPassive == null) return;
                 __instance.ReleasePassive(chainPassive);
             }

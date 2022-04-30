@@ -106,7 +106,45 @@ namespace KamiyoStaticUtil.Utils
                 .GetList().Where(x => x.index != 5).ToList());
             SingletonBehavior<BattleManagerUI>.Instance.ui_levelup.SetRootCanvas(false);
             SingletonBehavior<BattleManagerUI>.Instance.ui_emotionInfoBar.InitTeam();
-            SingletonBehavior<BattleManagerUI>.Instance.ui_battleEmotionCoinUI.Init();
+            InitUICoins();
+        }
+        public static void InitUICoins()
+        {
+            var librarian_lib =
+                typeof(BattleEmotionCoinUI).GetField("_librarian_lib", AccessTools.all)
+                        ?.GetValue(SingletonBehavior<BattleManagerUI>.Instance.ui_battleEmotionCoinUI) as
+                    Dictionary<int, BattleEmotionCoinUI.BattleEmotionCoinData>;
+            var enemy_lib =
+                typeof(BattleEmotionCoinUI).GetField("_enemy_lib", AccessTools.all)
+                        ?.GetValue(SingletonBehavior<BattleManagerUI>.Instance.ui_battleEmotionCoinUI) as
+                    Dictionary<int, BattleEmotionCoinUI.BattleEmotionCoinData>;
+            var lib_queue =
+                typeof(BattleEmotionCoinUI).GetField("_lib_queue", AccessTools.all)
+                        ?.GetValue(SingletonBehavior<BattleManagerUI>.Instance.ui_battleEmotionCoinUI) as
+                    Dictionary<int, Queue<EmotionCoinType>>;
+            var ene_queue =
+                typeof(BattleEmotionCoinUI).GetField("_ene_queue", AccessTools.all)
+                        ?.GetValue(SingletonBehavior<BattleManagerUI>.Instance.ui_battleEmotionCoinUI) as
+                    Dictionary<int, Queue<EmotionCoinType>>;
+            librarian_lib?.Clear();
+            enemy_lib?.Clear();
+            lib_queue?.Clear();
+            ene_queue?.Clear();
+            var aliveList = BattleObjectManager.instance.GetAliveList().Where(x => x.index != 5).ToList();
+            var num1 = 0;
+            var num2 = 0;
+            var formationDirection = (int)Singleton<StageController>.Instance.AllyFormationDirection;
+            var battleEmotionCoinDataArray1 = formationDirection == 1 ? SingletonBehavior<BattleManagerUI>.Instance.ui_battleEmotionCoinUI.librarian : SingletonBehavior<BattleManagerUI>.Instance.ui_battleEmotionCoinUI.enermy;
+            var battleEmotionCoinDataArray2 = formationDirection == 1 ? SingletonBehavior<BattleManagerUI>.Instance.ui_battleEmotionCoinUI.enermy : SingletonBehavior<BattleManagerUI>.Instance.ui_battleEmotionCoinUI.librarian;
+            foreach (var battleUnitModel in aliveList)
+            {
+                if (battleUnitModel.faction == Faction.Enemy)
+                    enemy_lib?.Add(battleUnitModel.id, battleEmotionCoinDataArray2[num2++]);
+                else
+                    librarian_lib?.Add(battleUnitModel.id, battleEmotionCoinDataArray1[num1++]);
+            }
+            typeof(BattleEmotionCoinUI).GetField("_init", AccessTools.all)
+                ?.SetValue(SingletonBehavior<BattleManagerUI>.Instance.ui_battleEmotionCoinUI, true);
         }
 
         public static void ChangeCardCostByValue(BattleUnitModel owner, int changeValue, int baseValue)

@@ -96,30 +96,39 @@ namespace KamiyoStaticUtil.Utils
             List<UIBookStoryEpisodeSlot> episodeSlots)
         {
             if (instance.chapter != 7) return;
-            var uibookStoryEpisodeSlot =
-                episodeSlots.FindAll(x => x.books.Find(y => ModParameters.PackageIds.Contains(y.id.packageId)) != null);
-            if (!uibookStoryEpisodeSlot.Any()) return;
-            foreach (var uiBook in uibookStoryEpisodeSlot)
+            foreach (var packageId in ModParameters.PackageIds)
             {
-                var books = uiBook.books;
-                var packageId = books.FirstOrDefault()?.id.packageId;
-                uiBook.Init(
-                    panel.panel.GetChapterBooksData(instance.chapter).FindAll(x =>
-                        x.id.packageId == packageId && ModParameters.BooksIds.Contains(x.id)), instance);
-                ((TextMeshProUGUI)uibookStoryEpisodeSlot.GetType().GetField("episodeText", AccessTools.all)
-                    .GetValue(uibookStoryEpisodeSlot)).text = ModParameters.EffectTexts
-                    .FirstOrDefault(x => x.Key.Equals(packageId)).Value
-                    .Name;
-                var image = (Image)uibookStoryEpisodeSlot.GetType().GetField("episodeIconGlow", AccessTools.all)
-                    .GetValue(uibookStoryEpisodeSlot);
-                var image2 = (Image)uibookStoryEpisodeSlot.GetType().GetField("episodeIcon", AccessTools.all)
-                    .GetValue(uibookStoryEpisodeSlot);
-                image2.sprite = ModParameters.ArtWorks[packageId];
-                image.sprite = ModParameters.ArtWorks[packageId];
-                instance.InstatiateAdditionalSlot();
-                var uibookStoryEpisodeSlot2 = episodeSlots[episodeSlots.Count - 1];
-                books.RemoveAll(x => x.id.packageId == packageId);
-                uibookStoryEpisodeSlot2.Init(instance.chapter, books, instance);
+                var uibookStoryEpisodeSlot = episodeSlots.Find(x =>
+                    x.books.Find(y => y.id.packageId == packageId) != null);
+                if (uibookStoryEpisodeSlot == null) continue;
+                if (!ModParameters.NoCredenza.Contains(packageId))
+                {
+                    var books = uibookStoryEpisodeSlot.books;
+                    uibookStoryEpisodeSlot.Init(
+                        panel.panel.GetChapterBooksData(instance.chapter).FindAll(x =>
+                            x.id.packageId == packageId && ModParameters.BooksIds.Contains(x.id)), instance);
+                    ((TextMeshProUGUI)uibookStoryEpisodeSlot.GetType().GetField("episodeText", AccessTools.all)
+                        .GetValue(uibookStoryEpisodeSlot)).text = ModParameters.EffectTexts
+                        .FirstOrDefault(x => x.Key.Equals(packageId)).Value
+                        .Name;
+                    var image = (Image)uibookStoryEpisodeSlot.GetType().GetField("episodeIconGlow", AccessTools.all)
+                        .GetValue(uibookStoryEpisodeSlot);
+                    var image2 = (Image)uibookStoryEpisodeSlot.GetType().GetField("episodeIcon", AccessTools.all)
+                        .GetValue(uibookStoryEpisodeSlot);
+                    image2.sprite = ModParameters.ArtWorks[packageId];
+                    image.sprite = ModParameters.ArtWorks[packageId];
+                    instance.InstatiateAdditionalSlot();
+                    var uibookStoryEpisodeSlot2 = episodeSlots[episodeSlots.Count - 1];
+                    books.RemoveAll(x => x.id.packageId == packageId);
+                    uibookStoryEpisodeSlot2.Init(instance.chapter, books, instance);
+                }
+                else
+                {
+                    var books = uibookStoryEpisodeSlot.books;
+                    var uibookStoryEpisodeSlot2 = episodeSlots[episodeSlots.Count - 1];
+                    books.RemoveAll(x => x.id.packageId == packageId);
+                    uibookStoryEpisodeSlot2.Init(instance.chapter, books, instance);
+                }
             }
         }
 

@@ -89,12 +89,24 @@ namespace KamiyoStaticUtil.Utils
             foreach (var (battleUnit, num) in BattleObjectManager.instance.GetList()
                          .Select((value, i) => (value, i)))
             {
-                SingletonBehavior<UICharacterRenderer>.Instance.SetCharacter(battleUnit.UnitData.unitData, num, true);
+                SingletonBehavior<UICharacterRenderer>.Instance.SetCharacter(battleUnit.UnitData.unitData, num,
+                    true);
                 if (forceReturn)
                     battleUnit.moveDetail.ReturnToFormationByBlink(true);
             }
 
-            BattleObjectManager.instance.InitUI();
+            InitUI();
+        }
+
+        private static void InitUI()
+        {
+            SingletonBehavior<BattleManagerUI>.Instance.ui_unitInformation.Init();
+            SingletonBehavior<BattleManagerUI>.Instance.ui_unitInformationPlayer.Init();
+            SingletonBehavior<BattleManagerUI>.Instance.ui_unitListInfoSummary.Initialize(BattleObjectManager.instance
+                .GetList().Where(x => x.index != 5).ToList());
+            SingletonBehavior<BattleManagerUI>.Instance.ui_levelup.SetRootCanvas(false);
+            SingletonBehavior<BattleManagerUI>.Instance.ui_emotionInfoBar.InitTeam();
+            SingletonBehavior<BattleManagerUI>.Instance.ui_battleEmotionCoinUI.Init();
         }
 
         public static void ChangeCardCostByValue(BattleUnitModel owner, int changeValue, int baseValue)
@@ -164,7 +176,12 @@ namespace KamiyoStaticUtil.Utils
                 unitWithIndex.emotionDetail.SetMaxEmotionLevel(unit.MaxEmotionLevel);
             unitWithIndex.cardSlotDetail.RecoverPlayPoint(unitWithIndex.cardSlotDetail.GetMaxPlayPoint());
             unitWithIndex.allyCardDetail.DrawCards(unitWithIndex.UnitData.unitData.GetStartDraw());
-            unitWithIndex.formation = new FormationPosition(unitWithIndex.formation._xmlInfo);
+            unitWithIndex.formation = unit.CustomPos != null
+                ? new FormationPosition(new FormationPositionXmlData
+                {
+                    vector = unit.CustomPos
+                })
+                : new FormationPosition(unitWithIndex.formation._xmlInfo);
             if (unit.AddEmotionPassive)
                 AddEmotionPassives(unitWithIndex);
             if (unit.OnWaveStart)
@@ -216,7 +233,12 @@ namespace KamiyoStaticUtil.Utils
             var allyUnit = BattleObjectManager.CreateDefaultUnit(Faction.Player);
             allyUnit.index = unit.Pos;
             allyUnit.grade = unitData.grade;
-            allyUnit.formation = floor.GetFormationPosition(allyUnit.index);
+            allyUnit.formation = unit.CustomPos != null
+                ? new FormationPosition(new FormationPositionXmlData
+                {
+                    vector = unit.CustomPos
+                })
+                : floor.GetFormationPosition(allyUnit.index);
             var unitBattleData = new UnitBattleDataModel(Singleton<StageController>.Instance.GetStageModel(), unitData);
             unitBattleData.Init();
             allyUnit.SetUnitData(unitBattleData);

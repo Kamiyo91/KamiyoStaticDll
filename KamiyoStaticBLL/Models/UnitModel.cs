@@ -11,5 +11,6 @@
         public int EmotionLevel { get; set; }
         public bool AddEmotionPassive { get; set; } = true;
         public bool OnWaveStart { get; set; }
+        public XmlVector2 CustomPos { get; set; }
     }
 }

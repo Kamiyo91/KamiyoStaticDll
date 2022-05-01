@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using HarmonyLib;
 using KamiyoStaticBLL.Enums;
 using KamiyoStaticBLL.Models;
@@ -108,6 +109,7 @@ namespace KamiyoStaticUtil.Utils
             SingletonBehavior<BattleManagerUI>.Instance.ui_emotionInfoBar.InitTeam();
             InitUICoins();
         }
+
         public static void InitUICoins()
         {
             var librarian_lib =
@@ -134,8 +136,12 @@ namespace KamiyoStaticUtil.Utils
             var num1 = 0;
             var num2 = 0;
             var formationDirection = (int)Singleton<StageController>.Instance.AllyFormationDirection;
-            var battleEmotionCoinDataArray1 = formationDirection == 1 ? SingletonBehavior<BattleManagerUI>.Instance.ui_battleEmotionCoinUI.librarian : SingletonBehavior<BattleManagerUI>.Instance.ui_battleEmotionCoinUI.enermy;
-            var battleEmotionCoinDataArray2 = formationDirection == 1 ? SingletonBehavior<BattleManagerUI>.Instance.ui_battleEmotionCoinUI.enermy : SingletonBehavior<BattleManagerUI>.Instance.ui_battleEmotionCoinUI.librarian;
+            var battleEmotionCoinDataArray1 = formationDirection == 1
+                ? SingletonBehavior<BattleManagerUI>.Instance.ui_battleEmotionCoinUI.librarian
+                : SingletonBehavior<BattleManagerUI>.Instance.ui_battleEmotionCoinUI.enermy;
+            var battleEmotionCoinDataArray2 = formationDirection == 1
+                ? SingletonBehavior<BattleManagerUI>.Instance.ui_battleEmotionCoinUI.enermy
+                : SingletonBehavior<BattleManagerUI>.Instance.ui_battleEmotionCoinUI.librarian;
             foreach (var battleUnitModel in aliveList)
             {
                 if (battleUnitModel.faction == Faction.Enemy)
@@ -143,6 +149,7 @@ namespace KamiyoStaticUtil.Utils
                 else
                     librarian_lib?.Add(battleUnitModel.id, battleEmotionCoinDataArray1[num1++]);
             }
+
             typeof(BattleEmotionCoinUI).GetField("_init", AccessTools.all)
                 ?.SetValue(SingletonBehavior<BattleManagerUI>.Instance.ui_battleEmotionCoinUI, true);
         }
@@ -711,6 +718,16 @@ namespace KamiyoStaticUtil.Utils
             unit.view.speedDiceSetterUI.BlockDiceAll(true);
             unit.view.speedDiceSetterUI.BreakDiceAll(true);
             SingletonBehavior<BattleManagerUI>.Instance.ui_TargetArrow.UpdateTargetList();
+        }
+
+        public static void InitKeywords(Assembly assembly)
+        {
+            if (typeof(BattleCardAbilityDescXmlList).GetField("_dictionaryKeywordCache", AccessTools.all)
+                    ?.GetValue(BattleCardAbilityDescXmlList.Instance) is Dictionary<string, List<string>> dictionary)
+                assembly.GetTypes().Where(x => x.IsSubclassOf(typeof(DiceCardSelfAbilityBase))
+                                               && x.Name.StartsWith("DiceCardSelfAbility_"))
+                    .Do(x => dictionary[x.Name.Replace("DiceCardSelfAbility_", "")] =
+                        new List<string>(((DiceCardSelfAbilityBase)Activator.CreateInstance(x)).Keywords));
         }
     }
 }

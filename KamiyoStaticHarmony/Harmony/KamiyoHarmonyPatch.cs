@@ -48,13 +48,15 @@ namespace KamiyoStaticHarmony.Harmony
             UIBookStoryEpisodeSlot slot, TextMeshProUGUI ___selectedEpisodeText, Image ___selectedEpisodeIcon,
             Image ___selectedEpisodeIconGlow)
         {
-            if (slot == null || !ModParameters.PackageIds.Contains(___selectedEpisodeText.text)) return;
-            var selectedSlot = ___selectedEpisodeText.text;
+            if (slot == null) return;
+            var book = slot.books.FirstOrDefault(x => ModParameters.PackageIds.Contains(x.id.packageId));
+            if (book == null) return;
+            var packageId = book.id.packageId;
             ___selectedEpisodeText.text = ModParameters.EffectTexts
-                .FirstOrDefault(x => x.Key.Equals(selectedSlot)).Value
+                .FirstOrDefault(x => x.Key.Equals(packageId)).Value
                 .Name;
-            ___selectedEpisodeIcon.sprite = ModParameters.ArtWorks[selectedSlot];
-            ___selectedEpisodeIconGlow.sprite = ModParameters.ArtWorks[selectedSlot];
+            ___selectedEpisodeIcon.sprite = ModParameters.ArtWorks[packageId];
+            ___selectedEpisodeIconGlow.sprite = ModParameters.ArtWorks[packageId];
             __instance.UpdateBookSlots();
         }
 
@@ -81,9 +83,8 @@ namespace KamiyoStaticHarmony.Harmony
         public static void BookModel_SetXmlInfo(BookModel __instance, ref List<DiceCardXmlInfo> ____onlyCards)
         {
             if (!ModParameters.PackageIds.Contains(__instance.BookId.packageId)) return;
-            var onlyCards = ModParameters.OnlyCardKeywords.FirstOrDefault(x => x.Item3 == __instance.BookId);
-            if (onlyCards != null)
-                ____onlyCards.AddRange(onlyCards.Item2.Select(id =>
+            foreach (var card in ModParameters.OnlyCardKeywords.Where(x => x.Item3 == __instance.BookId))
+                ____onlyCards.AddRange(card.Item2.Select(id =>
                     ItemXmlDataList.instance.GetCardItem(id)));
         }
 

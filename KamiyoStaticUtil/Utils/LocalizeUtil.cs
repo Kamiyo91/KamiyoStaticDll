@@ -652,10 +652,6 @@ namespace KamiyoStaticUtil.Utils
                 "KamiyoStaticBLL",
                 "KamiyoStaticUtil"
             }.Exists(y => x.Contains("The same assembly name already exists. : " + y)));
-            Singleton<ModContentManager>.Instance.GetErrorLogs().RemoveAll(x => new List<string>
-            {
-                "BongBongEnterprises_Lite"
-            }.Exists(y => x.Contains("The given key was not present in the dictionary.") && x.Contains(y)));
         }
     }
 }

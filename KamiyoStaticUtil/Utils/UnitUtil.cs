@@ -96,60 +96,14 @@ namespace KamiyoStaticUtil.Utils
                     battleUnit.moveDetail.ReturnToFormationByBlink(true);
             }
 
-            InitUI();
-        }
-
-        private static void InitUI()
-        {
-            SingletonBehavior<BattleManagerUI>.Instance.ui_unitInformation.Init();
-            SingletonBehavior<BattleManagerUI>.Instance.ui_unitInformationPlayer.Init();
-            SingletonBehavior<BattleManagerUI>.Instance.ui_unitListInfoSummary.Initialize(BattleObjectManager.instance
-                .GetList().Where(x => x.index != 5).ToList());
-            SingletonBehavior<BattleManagerUI>.Instance.ui_levelup.SetRootCanvas(false);
-            SingletonBehavior<BattleManagerUI>.Instance.ui_emotionInfoBar.InitTeam();
-            InitUICoins();
-        }
-
-        public static void InitUICoins()
-        {
-            var librarianLib =
-                typeof(BattleEmotionCoinUI).GetField("_librarian_lib", AccessTools.all)
-                        ?.GetValue(SingletonBehavior<BattleManagerUI>.Instance.ui_battleEmotionCoinUI) as
-                    Dictionary<int, BattleEmotionCoinUI.BattleEmotionCoinData>;
-            var enemyLib =
-                typeof(BattleEmotionCoinUI).GetField("_enemy_lib", AccessTools.all)
-                        ?.GetValue(SingletonBehavior<BattleManagerUI>.Instance.ui_battleEmotionCoinUI) as
-                    Dictionary<int, BattleEmotionCoinUI.BattleEmotionCoinData>;
-            var libQueue =
-                typeof(BattleEmotionCoinUI).GetField("_lib_queue", AccessTools.all)
-                        ?.GetValue(SingletonBehavior<BattleManagerUI>.Instance.ui_battleEmotionCoinUI) as
-                    Dictionary<int, Queue<EmotionCoinType>>;
-            var ene_queue =
-                typeof(BattleEmotionCoinUI).GetField("_ene_queue", AccessTools.all)
-                        ?.GetValue(SingletonBehavior<BattleManagerUI>.Instance.ui_battleEmotionCoinUI) as
-                    Dictionary<int, Queue<EmotionCoinType>>;
-            librarianLib?.Clear();
-            enemyLib?.Clear();
-            libQueue?.Clear();
-            ene_queue?.Clear();
-            var aliveList = BattleObjectManager.instance.GetAliveList().Where(x => x.index != 5).ToList();
-            var num1 = 0;
-            var num2 = 0;
-            var formationDirection = (int)Singleton<StageController>.Instance.AllyFormationDirection;
-            var battleEmotionCoinDataArray1 = formationDirection == 1
-                ? SingletonBehavior<BattleManagerUI>.Instance.ui_battleEmotionCoinUI.librarian
-                : SingletonBehavior<BattleManagerUI>.Instance.ui_battleEmotionCoinUI.enermy;
-            var battleEmotionCoinDataArray2 = formationDirection == 1
-                ? SingletonBehavior<BattleManagerUI>.Instance.ui_battleEmotionCoinUI.enermy
-                : SingletonBehavior<BattleManagerUI>.Instance.ui_battleEmotionCoinUI.librarian;
-            foreach (var battleUnitModel in aliveList)
-                if (battleUnitModel.faction == Faction.Enemy)
-                    enemyLib?.Add(battleUnitModel.id, battleEmotionCoinDataArray2[num2++]);
-                else
-                    librarianLib?.Add(battleUnitModel.id, battleEmotionCoinDataArray1[num1++]);
-
-            typeof(BattleEmotionCoinUI).GetField("_init", AccessTools.all)
-                ?.SetValue(SingletonBehavior<BattleManagerUI>.Instance.ui_battleEmotionCoinUI, true);
+            try
+            {
+                BattleObjectManager.instance.InitUI();
+            }
+            catch (IndexOutOfRangeException)
+            {
+                // ignored
+            }
         }
 
         public static void ChangeCardCostByValue(BattleUnitModel owner, int changeValue, int baseValue)
@@ -269,11 +223,12 @@ namespace KamiyoStaticUtil.Utils
         }
 
         public static BattleUnitModel AddNewUnitPlayerSide(StageLibraryFloorModel floor, UnitModel unit,
-            string packageId)
+            string packageId, bool playerSide = true)
         {
-            var unitData = new UnitDataModel(new LorId(packageId, unit.Id), floor.Sephirah);
+            var unitData = new UnitDataModel(new LorId(packageId, unit.Id),
+                playerSide ? floor.Sephirah : SephirahType.None);
             unitData.SetCustomName(unit.Name);
-            var allyUnit = BattleObjectManager.CreateDefaultUnit(Faction.Player);
+            var allyUnit = BattleObjectManager.CreateDefaultUnit(playerSide ? Faction.Player : Faction.Enemy);
             allyUnit.index = unit.Pos;
             allyUnit.grade = unitData.grade;
             allyUnit.formation = unit.CustomPos != null
@@ -741,23 +696,27 @@ namespace KamiyoStaticUtil.Utils
                 .GetAliveList(otherSide ? ReturnOtherSideFaction(owner.faction) : owner.faction).Count(x =>
                     !x.passiveDetail.PassiveList.Exists(y => ModParameters.SupportCharPassive.Contains(y.id)));
         }
+
         public static List<BattleUnitModel> ExcludeSupportChars(BattleUnitModel owner, bool otherSide = false)
         {
             return BattleObjectManager.instance
                 .GetAliveList(otherSide ? ReturnOtherSideFaction(owner.faction) : owner.faction).Where(x =>
                     !x.passiveDetail.PassiveList.Exists(y => ModParameters.SupportCharPassive.Contains(y.id))).ToList();
         }
+
         public static bool NotTargetableCharCheck(BattleUnitModel target)
         {
-            return !target.passiveDetail.PassiveList.Exists(y => ModParameters.NoTargetSupportCharPassive.Contains(y.id));
+            return !target.passiveDetail.PassiveList.Exists(
+                y => ModParameters.NoTargetSupportCharPassive.Contains(y.id));
         }
 
-        public static bool SpecialCaseEgo(Faction unitFaction, LorId passiveId,Type buffType)
+        public static bool SpecialCaseEgo(Faction unitFaction, LorId passiveId, Type buffType)
         {
             var playerUnit = BattleObjectManager.instance
                 .GetAliveList(ReturnOtherSideFaction(unitFaction)).FirstOrDefault(x =>
                     x.passiveDetail.PassiveList.Exists(y => y.id == passiveId));
-            return playerUnit != null && playerUnit.bufListDetail.GetActivatedBufList().Exists(x => !x.IsDestroyed() && x.GetType() == buffType);
+            return playerUnit != null && playerUnit.bufListDetail.GetActivatedBufList()
+                .Exists(x => !x.IsDestroyed() && x.GetType() == buffType);
         }
     }
 }

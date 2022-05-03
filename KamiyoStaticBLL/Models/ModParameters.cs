@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using BattleCharacterProfile;
 using KamiyoStaticBLL.Enums;
 using UnityEngine;
 
@@ -79,5 +80,17 @@ namespace KamiyoStaticBLL.Models
         public static List<LorId> SupportCharPassive = new List<LorId>();
         public static List<LorId> NoTargetSupportCharPassive = new List<LorId>();
         public static bool ChangedMultiView = false;
+
+        public static List<BattleCharacterProfileUI> EnemyProfileArray2 = new List<BattleCharacterProfileUI>();
+        public static List<BattleCharacterProfileUI> AllyProfileArray2 = new List<BattleCharacterProfileUI>();
+
+        public static List<BattleEmotionCoinUI.BattleEmotionCoinData> Enemy2 =
+            new List<BattleEmotionCoinUI.BattleEmotionCoinData>();
+
+        public static List<BattleEmotionCoinUI.BattleEmotionCoinData> Librarian2 =
+            new List<BattleEmotionCoinUI.BattleEmotionCoinData>();
+
+        public static Dictionary<LorId, List<List<UnitDataModel>>> EnemyListCache =
+            new Dictionary<LorId, List<List<UnitDataModel>>>();
     }
 }

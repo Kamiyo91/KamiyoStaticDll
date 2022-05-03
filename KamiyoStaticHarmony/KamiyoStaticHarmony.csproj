@@ -65,6 +65,7 @@
     <Compile Include="Harmony\KamiyoEmotionSelectionUnitPatch.cs" />
     <Compile Include="Harmony\KamiyoHarmonyPatch.cs" />
     <Compile Include="Harmony\KamiyoStaticHarmonyInit.cs" />
+    <Compile Include="Harmony\KamiyoUnitLimitPatch.cs" />
     <Compile Include="Harmony\KamiyoUpdateCoinPatch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

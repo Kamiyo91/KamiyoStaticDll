@@ -57,6 +57,9 @@
     <Reference Include="UnityEngine.ImageConversionModule">
       <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Library Of Ruina\LibraryOfRuina_Data\Managed\UnityEngine.ImageConversionModule.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.ProfilerModule">
+      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Library Of Ruina\LibraryOfRuina_Data\Managed\UnityEngine.ProfilerModule.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.UI">
       <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Library Of Ruina\LibraryOfRuina_Data\Managed\UnityEngine.UI.dll</HintPath>
     </Reference>
@@ -84,6 +87,7 @@
     <Compile Include="Utils\MapStaticUtil.cs" />
     <Compile Include="Utils\SephiraUtil.cs" />
     <Compile Include="Utils\SkinUtil.cs" />
+    <Compile Include="Utils\UnitLimitUtil.cs" />
     <Compile Include="Utils\UnitUtil.cs" />
   </ItemGroup>
   <ItemGroup>

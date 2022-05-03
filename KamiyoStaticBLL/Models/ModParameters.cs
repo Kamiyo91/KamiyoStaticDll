@@ -74,6 +74,9 @@ namespace KamiyoStaticBLL.Models
         public static Dictionary<LorId, LorId> DialogList = new Dictionary<LorId, LorId>();
         public static List<LorId> KeypageIds = new List<LorId>();
         public static List<string> NoCredenza = new List<string>();
+        public static List<LorId> OneSideCards = new List<LorId>();
+        public static List<LorId> OneSideClashPassive = new List<LorId>();
+        public static List<LorId> SupportCharPassive = new List<LorId>();
         public static bool ChangedMultiView = false;
     }
 }

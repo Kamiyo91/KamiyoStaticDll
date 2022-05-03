@@ -16,5 +16,10 @@
         {
             Destroy();
         }
+
+        public override bool CanRecoverHp(int amount)
+        {
+            return false;
+        }
     }
 }

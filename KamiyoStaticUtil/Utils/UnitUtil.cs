@@ -143,12 +143,10 @@ namespace KamiyoStaticUtil.Utils
                 ? SingletonBehavior<BattleManagerUI>.Instance.ui_battleEmotionCoinUI.enermy
                 : SingletonBehavior<BattleManagerUI>.Instance.ui_battleEmotionCoinUI.librarian;
             foreach (var battleUnitModel in aliveList)
-            {
                 if (battleUnitModel.faction == Faction.Enemy)
                     enemy_lib?.Add(battleUnitModel.id, battleEmotionCoinDataArray2[num2++]);
                 else
                     librarian_lib?.Add(battleUnitModel.id, battleEmotionCoinDataArray1[num1++]);
-            }
 
             typeof(BattleEmotionCoinUI).GetField("_init", AccessTools.all)
                 ?.SetValue(SingletonBehavior<BattleManagerUI>.Instance.ui_battleEmotionCoinUI, true);
@@ -728,6 +726,18 @@ namespace KamiyoStaticUtil.Utils
                                                && x.Name.StartsWith("DiceCardSelfAbility_"))
                     .Do(x => dictionary[x.Name.Replace("DiceCardSelfAbility_", "")] =
                         new List<string>(((DiceCardSelfAbilityBase)Activator.CreateInstance(x)).Keywords));
+        }
+
+        public static int SupportCharCheck(BattleUnitModel owner, bool otherSide = false)
+        {
+            return BattleObjectManager.instance
+                .GetAliveList(otherSide ? ReturnOtherSideFaction(owner.faction) : owner.faction).Count(x =>
+                    !x.passiveDetail.PassiveList.Exists(y => ModParameters.SupportCharPassive.Contains(y.id)));
+        }
+
+        public static bool NotTargetableCharCheck(BattleUnitModel target)
+        {
+            return !target.passiveDetail.PassiveList.Exists(y => ModParameters.SupportCharPassive.Contains(y.id));
         }
     }
 }

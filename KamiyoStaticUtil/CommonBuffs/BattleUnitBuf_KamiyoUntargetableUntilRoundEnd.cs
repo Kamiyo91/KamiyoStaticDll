@@ -16,5 +16,10 @@
         {
             Destroy();
         }
+
+        public override bool IsImmortal()
+        {
+            return true;
+        }
     }
 }

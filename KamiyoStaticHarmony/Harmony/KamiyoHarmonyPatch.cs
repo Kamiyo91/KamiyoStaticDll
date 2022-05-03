@@ -609,5 +609,33 @@ namespace KamiyoStaticHarmony.Harmony
             if (ModParameters.ExtraMotions.Contains(____self.UnitData.unitData.bookItem.ClassInfo.id))
                 ____self.view.charAppearance.ChangeMotion(ActionDetail.Guard);
         }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(StageController), "StartParrying")]
+        public static bool StageController_StartParrying_Pre(BattlePlayingCardDataInUnitModel cardA,
+            BattlePlayingCardDataInUnitModel cardB, ref StageController.StagePhase ____phase,
+            List<BattlePlayingCardDataInUnitModel> ____allCardList)
+        {
+            try
+            {
+                if (ModParameters.OneSideClashPassive.Any(
+                        x => cardA.owner.passiveDetail.PassiveList.Any(y => x == y.id)) ||
+                    ModParameters.OneSideCards.Contains(cardA.card.GetID()))
+                {
+                    ____phase = StageController.StagePhase.ExecuteOneSideAction;
+                    cardA.owner.turnState = BattleUnitTurnState.DOING_ACTION;
+                    cardA.target.turnState = BattleUnitTurnState.DOING_ACTION;
+                    cardB.owner.currentDiceAction = null;
+                    Singleton<BattleOneSidePlayManager>.Instance.StartOneSidePlay(cardA);
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError(ex.Message);
+            }
+
+            return true;
+        }
     }
 }

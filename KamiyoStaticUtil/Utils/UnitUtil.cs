@@ -112,15 +112,15 @@ namespace KamiyoStaticUtil.Utils
 
         public static void InitUICoins()
         {
-            var librarian_lib =
+            var librarianLib =
                 typeof(BattleEmotionCoinUI).GetField("_librarian_lib", AccessTools.all)
                         ?.GetValue(SingletonBehavior<BattleManagerUI>.Instance.ui_battleEmotionCoinUI) as
                     Dictionary<int, BattleEmotionCoinUI.BattleEmotionCoinData>;
-            var enemy_lib =
+            var enemyLib =
                 typeof(BattleEmotionCoinUI).GetField("_enemy_lib", AccessTools.all)
                         ?.GetValue(SingletonBehavior<BattleManagerUI>.Instance.ui_battleEmotionCoinUI) as
                     Dictionary<int, BattleEmotionCoinUI.BattleEmotionCoinData>;
-            var lib_queue =
+            var libQueue =
                 typeof(BattleEmotionCoinUI).GetField("_lib_queue", AccessTools.all)
                         ?.GetValue(SingletonBehavior<BattleManagerUI>.Instance.ui_battleEmotionCoinUI) as
                     Dictionary<int, Queue<EmotionCoinType>>;
@@ -128,9 +128,9 @@ namespace KamiyoStaticUtil.Utils
                 typeof(BattleEmotionCoinUI).GetField("_ene_queue", AccessTools.all)
                         ?.GetValue(SingletonBehavior<BattleManagerUI>.Instance.ui_battleEmotionCoinUI) as
                     Dictionary<int, Queue<EmotionCoinType>>;
-            librarian_lib?.Clear();
-            enemy_lib?.Clear();
-            lib_queue?.Clear();
+            librarianLib?.Clear();
+            enemyLib?.Clear();
+            libQueue?.Clear();
             ene_queue?.Clear();
             var aliveList = BattleObjectManager.instance.GetAliveList().Where(x => x.index != 5).ToList();
             var num1 = 0;
@@ -144,9 +144,9 @@ namespace KamiyoStaticUtil.Utils
                 : SingletonBehavior<BattleManagerUI>.Instance.ui_battleEmotionCoinUI.librarian;
             foreach (var battleUnitModel in aliveList)
                 if (battleUnitModel.faction == Faction.Enemy)
-                    enemy_lib?.Add(battleUnitModel.id, battleEmotionCoinDataArray2[num2++]);
+                    enemyLib?.Add(battleUnitModel.id, battleEmotionCoinDataArray2[num2++]);
                 else
-                    librarian_lib?.Add(battleUnitModel.id, battleEmotionCoinDataArray1[num1++]);
+                    librarianLib?.Add(battleUnitModel.id, battleEmotionCoinDataArray1[num1++]);
 
             typeof(BattleEmotionCoinUI).GetField("_init", AccessTools.all)
                 ?.SetValue(SingletonBehavior<BattleManagerUI>.Instance.ui_battleEmotionCoinUI, true);
@@ -452,7 +452,7 @@ namespace KamiyoStaticUtil.Utils
 
                 var canvas = (Canvas)typeof(BattleDialogUI).GetField("_canvas",
                     AccessTools.all)?.GetValue(instance);
-                canvas.enabled = true;
+                if (canvas != null) canvas.enabled = true;
                 component.interactable = true;
                 component.blocksRaycasts = true;
                 txtAbnormalityDlg.GetComponent<AbnormalityDlgEffect>().Init();
@@ -461,7 +461,7 @@ namespace KamiyoStaticUtil.Utils
             var _ = (Coroutine)typeof(BattleDialogUI).GetField("_routine",
                 AccessTools.all)?.GetValue(instance);
             var method = typeof(BattleDialogUI).GetMethod("AbnormalityDlgRoutine", AccessTools.all);
-            instance.StartCoroutine(method.Invoke(instance, Array.Empty<object>()) as IEnumerator);
+            if (method != null) instance.StartCoroutine(method.Invoke(instance, Array.Empty<object>()) as IEnumerator);
         }
 
         public static List<UnitBattleDataModel> UnitsToRecover(StageModel stageModel, UnitDataModel data)
@@ -559,48 +559,55 @@ namespace KamiyoStaticUtil.Utils
 
         public static void ChangeCardItem(ItemXmlDataList instance, string packageId)
         {
-            var dictionary = (Dictionary<LorId, DiceCardXmlInfo>)instance.GetType()
-                .GetField("_cardInfoTable", AccessTools.all).GetValue(instance);
-            var list = (List<DiceCardXmlInfo>)instance.GetType()
-                .GetField("_cardInfoList", AccessTools.all).GetValue(instance);
-            foreach (var item in dictionary.Where(x => string.IsNullOrEmpty(x.Key.packageId))
-                         .Where(item => ModParameters.OriginalNoInventoryCardList.Contains(item.Key))
-                         .ToList())
-                SetCustomCardOption(CardOption.NoInventory, item.Key, false, ref dictionary, ref list);
-            var onlyPageCardList = GetAllOnlyCardsId();
-            foreach (var item in dictionary.Where(x => x.Key.packageId == packageId).ToList())
+            try
             {
-                if (ModParameters.NoInventoryCardList.Contains(item.Key))
-                {
+                var dictionary = (Dictionary<LorId, DiceCardXmlInfo>)instance.GetType()
+                    .GetField("_cardInfoTable", AccessTools.all).GetValue(instance);
+                var list = (List<DiceCardXmlInfo>)instance.GetType()
+                    .GetField("_cardInfoList", AccessTools.all).GetValue(instance);
+                foreach (var item in dictionary.Where(x => string.IsNullOrEmpty(x.Key.packageId))
+                             .Where(item => ModParameters.OriginalNoInventoryCardList.Contains(item.Key))
+                             .ToList())
                     SetCustomCardOption(CardOption.NoInventory, item.Key, false, ref dictionary, ref list);
-                    continue;
-                }
-
-                if (ModParameters.PersonalCardList.Contains(item.Key))
+                var onlyPageCardList = GetAllOnlyCardsId();
+                foreach (var item in dictionary.Where(x => x.Key.packageId == packageId).ToList())
                 {
-                    SetCustomCardOption(CardOption.Personal, item.Key, false, ref dictionary, ref list);
-                    continue;
-                }
+                    if (ModParameters.NoInventoryCardList.Contains(item.Key))
+                    {
+                        SetCustomCardOption(CardOption.NoInventory, item.Key, false, ref dictionary, ref list);
+                        continue;
+                    }
 
-                if (ModParameters.EgoPersonalCardList.Contains(item.Key))
-                {
-                    SetCustomCardOption(CardOption.EgoPersonal, item.Key, false, ref dictionary, ref list);
-                    continue;
-                }
+                    if (ModParameters.PersonalCardList.Contains(item.Key))
+                    {
+                        SetCustomCardOption(CardOption.Personal, item.Key, false, ref dictionary, ref list);
+                        continue;
+                    }
 
-                if (ModParameters.NoInventoryCardList.Contains(item.Key))
-                {
-                    SetCustomCardOption(CardOption.NoInventory, item.Key, false, ref dictionary, ref list);
-                    continue;
-                }
+                    if (ModParameters.EgoPersonalCardList.Contains(item.Key))
+                    {
+                        SetCustomCardOption(CardOption.EgoPersonal, item.Key, false, ref dictionary, ref list);
+                        continue;
+                    }
 
-                if (onlyPageCardList.Contains(item.Key))
-                {
-                    SetCustomCardOption(CardOption.OnlyPage, item.Key, true, ref dictionary, ref list);
-                    continue;
-                }
+                    if (ModParameters.NoInventoryCardList.Contains(item.Key))
+                    {
+                        SetCustomCardOption(CardOption.NoInventory, item.Key, false, ref dictionary, ref list);
+                        continue;
+                    }
 
-                SetBaseKeywordCard(item.Key, ref dictionary, ref list);
+                    if (onlyPageCardList.Contains(item.Key))
+                    {
+                        SetCustomCardOption(CardOption.OnlyPage, item.Key, true, ref dictionary, ref list);
+                        continue;
+                    }
+
+                    SetBaseKeywordCard(item.Key, ref dictionary, ref list);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError("There was an error while changing the Cards values " + ex.Message);
             }
         }
 
@@ -734,10 +741,23 @@ namespace KamiyoStaticUtil.Utils
                 .GetAliveList(otherSide ? ReturnOtherSideFaction(owner.faction) : owner.faction).Count(x =>
                     !x.passiveDetail.PassiveList.Exists(y => ModParameters.SupportCharPassive.Contains(y.id)));
         }
-
+        public static List<BattleUnitModel> ExcludeSupportChars(BattleUnitModel owner, bool otherSide = false)
+        {
+            return BattleObjectManager.instance
+                .GetAliveList(otherSide ? ReturnOtherSideFaction(owner.faction) : owner.faction).Where(x =>
+                    !x.passiveDetail.PassiveList.Exists(y => ModParameters.SupportCharPassive.Contains(y.id))).ToList();
+        }
         public static bool NotTargetableCharCheck(BattleUnitModel target)
         {
-            return !target.passiveDetail.PassiveList.Exists(y => ModParameters.SupportCharPassive.Contains(y.id));
+            return !target.passiveDetail.PassiveList.Exists(y => ModParameters.NoTargetSupportCharPassive.Contains(y.id));
+        }
+
+        public static bool SpecialCaseEgo(Faction unitFaction, LorId passiveId,Type buffType)
+        {
+            var playerUnit = BattleObjectManager.instance
+                .GetAliveList(ReturnOtherSideFaction(unitFaction)).FirstOrDefault(x =>
+                    x.passiveDetail.PassiveList.Exists(y => y.id == passiveId));
+            return playerUnit != null && playerUnit.bufListDetail.GetActivatedBufList().Exists(x => !x.IsDestroyed() && x.GetType() == buffType);
         }
     }
 }

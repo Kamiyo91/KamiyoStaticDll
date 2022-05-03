@@ -10,7 +10,7 @@ namespace KamiyoStaticBLL.Models
         public static List<string> PackageIds = new List<string>();
         public static Dictionary<string, Sprite> ArtWorks = new Dictionary<string, Sprite>();
         public static List<string> Path = new List<string>();
-        public static string Language = string.Empty;
+        public static string Language = GlobalGameManager.Instance.CurrentOption.language;
 
         public static readonly Dictionary<string, EffectTextModel> EffectTexts =
             new Dictionary<string, EffectTextModel>();
@@ -77,6 +77,7 @@ namespace KamiyoStaticBLL.Models
         public static List<LorId> OneSideCards = new List<LorId>();
         public static List<LorId> OneSideClashPassive = new List<LorId>();
         public static List<LorId> SupportCharPassive = new List<LorId>();
+        public static List<LorId> NoTargetSupportCharPassive = new List<LorId>();
         public static bool ChangedMultiView = false;
     }
 }

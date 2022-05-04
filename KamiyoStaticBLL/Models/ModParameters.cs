@@ -12,41 +12,30 @@ namespace KamiyoStaticBLL.Models
         public static Dictionary<string, Sprite> ArtWorks = new Dictionary<string, Sprite>();
         public static List<string> Path = new List<string>();
         public static string Language = GlobalGameManager.Instance.CurrentOption.language;
-
         public static readonly Dictionary<string, EffectTextModel> EffectTexts =
             new Dictionary<string, EffectTextModel>();
-
         public static Dictionary<LorId, string> NameTexts = new Dictionary<LorId, string>();
-
         public static List<Tuple<List<string>, List<LorId>, LorId>> OnlyCardKeywords =
             new List<Tuple<List<string>, List<LorId>, LorId>>();
-
         public static Dictionary<LorId, LorId> DynamicNames = new Dictionary<LorId, LorId>();
-
         public static Dictionary<LorId, Tuple<string, SephirahType>> DynamicSephirahNames =
             new Dictionary<LorId, Tuple<string, SephirahType>>();
-
         public static List<LorId> BooksIds = new List<LorId>();
         public static List<LorId> CustomSkinTrue = new List<LorId>();
         public static List<LorId> PersonalCardList = new List<LorId>();
         public static List<LorId> EgoPersonalCardList = new List<LorId>();
         public static List<LorId> UntransferablePassives = new List<LorId>();
-
         public static List<Tuple<string, List<LorId>, string>> SkinNameIds =
             new List<Tuple<string, List<LorId>, string>>();
-
         public static List<LorId> OriginalNoInventoryCardList = new List<LorId>();
         public static List<LorId> NoInventoryCardList = new List<LorId>();
         public static Dictionary<string, List<LorId>> SpritePreviewChange = new Dictionary<string, List<LorId>>();
         public static List<LorId> NoEgoFloorUnit = new List<LorId>();
-
         public static Dictionary<string, List<LorId>>
             DefaultSpritePreviewChange = new Dictionary<string, List<LorId>>();
-
         public static List<Tuple<LorId, List<PreBattleUnitModel>, List<SephirahType>, PreBattleUnitSpecialCases>>
             PreBattleUnits =
                 new List<Tuple<LorId, List<PreBattleUnitModel>, List<SephirahType>, PreBattleUnitSpecialCases>>();
-
         public static Dictionary<LorId, bool> BannedEmotionStages = new Dictionary<LorId, bool>();
         public static List<SkinNames> SkinParameters = new List<SkinNames>();
         public static List<LorId> OnlySephirahStage = new List<LorId>();
@@ -58,16 +47,12 @@ namespace KamiyoStaticBLL.Models
         public static List<LorId> ExtraMotions = new List<LorId>();
         public static List<LorId> BookList = new List<LorId>();
         public static List<LorId> EmotionExcludePassive = new List<LorId>();
-
         public static Dictionary<LorId, List<SephirahType>> UniqueUnitStages =
             new Dictionary<LorId, List<SephirahType>>();
-
         public static List<Tuple<LorId, List<LorId>>> MultiDeckPassive = new List<Tuple<LorId, List<LorId>>>();
         public static List<LorId> MultiDeckPassiveIds = new List<LorId>();
-
         public static List<Tuple<LorId, LorId, List<string>>> MultiDeckLabels =
             new List<Tuple<LorId, LorId, List<string>>>();
-
         public static List<LorId> MultiDeckUnits = new List<LorId>();
         public static Dictionary<string, string> DefaultKeyword = new Dictionary<string, string>();
         public static Dictionary<int, List<LorId>> SameInnerIdPassives = new Dictionary<int, List<LorId>>();
@@ -83,14 +68,9 @@ namespace KamiyoStaticBLL.Models
 
         public static List<BattleCharacterProfileUI> EnemyProfileArray2 = new List<BattleCharacterProfileUI>();
         public static List<BattleCharacterProfileUI> AllyProfileArray2 = new List<BattleCharacterProfileUI>();
-
         public static List<BattleEmotionCoinUI.BattleEmotionCoinData> Enemy2 =
             new List<BattleEmotionCoinUI.BattleEmotionCoinData>();
-
         public static List<BattleEmotionCoinUI.BattleEmotionCoinData> Librarian2 =
             new List<BattleEmotionCoinUI.BattleEmotionCoinData>();
-
-        public static Dictionary<LorId, List<List<UnitDataModel>>> EnemyListCache =
-            new Dictionary<LorId, List<List<UnitDataModel>>>();
     }
 }

@@ -324,7 +324,7 @@ namespace KamiyoStaticHarmony.Harmony
             var characterName = customBookItem.GetCharacterName();
             try
             {
-                var flag = false;
+                var isWorkshopSkin = false;
                 var num2 = 0;
                 if (!string.IsNullOrEmpty(unit.workshopSkin))
                     num2 = 1;
@@ -342,7 +342,7 @@ namespace KamiyoStaticHarmony.Harmony
                             .GetComponent<CharacterAppearance>();
                         uicharacter.unitAppearance.transform.localPosition = new Vector3(num, -2f, 10f);
                         uicharacter.unitAppearance.GetComponent<WorkshopSkinDataSetter>().SetData(workshopSkinData);
-                        flag = true;
+                        isWorkshopSkin = true;
                         break;
                     }
                     case 2:
@@ -428,7 +428,7 @@ namespace KamiyoStaticHarmony.Harmony
                 var unitAppearance5 = uicharacter.unitAppearance;
                 if (unitAppearance5 != null) unitAppearance5.ChangeLayer("CharacterAppearance_UI");
 
-                if (flag) uicharacter.unitAppearance.GetComponent<WorkshopSkinDataSetter>().LateInit();
+                if (isWorkshopSkin) uicharacter.unitAppearance.GetComponent<WorkshopSkinDataSetter>().LateInit();
 
                 if (unit.EnemyUnitId != -1)
                     if (uicharacter.unitAppearance != null)
@@ -501,13 +501,11 @@ namespace KamiyoStaticHarmony.Harmony
                 if (uicharacter.unitModel != null)
                 {
                     var d = (float)uicharacter.unitModel.customizeData.height;
-                    var flag2 = uicharacter.unitAppearance != null;
-                    if (flag2)
+                    if (uicharacter.unitAppearance != null)
                     {
                         v = Vector2.one * d * 0.005f;
                         uicharacter.unitAppearance.transform.localScale = v;
                     }
-
                     __result = __instance.cameraList[index].targetTexture;
                     return false;
                 }

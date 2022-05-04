@@ -21,16 +21,16 @@ namespace KamiyoStaticUtil.BaseClass
         {
             if (_model.Owner.hp - dmg > _model.Hp || !_model.Survive) return;
             _model.Survive = false;
-            _model.Owner.SetHp(_model.SetHp);
             UnitUtil.UnitReviveAndRecovery(_model.Owner, 0, _model.RecoverLightOnSurvive);
-            _model.Owner.bufListDetail.AddBufWithoutDuplication(
-                new BattleUnitBuf_KamiyoImmunityToStatusAlimentUntilRoundEnd());
             if (_model.HasSurviveAbDialog)
                 UnitUtil.BattleAbDialog(_model.Owner.view.dialogUI, _model.SurviveAbDialogList,
                     _model.SurviveAbDialogColor);
+            _model.Owner.SetHp(_model.SetHp);
             if (_model.NearDeathBuffExist)
                 _model.Owner.bufListDetail.AddBufWithoutDuplication(
                     (BattleUnitBuf)Activator.CreateInstance(_model.NearDeathBuffType));
+            _model.Owner.bufListDetail.AddBufWithoutDuplication(
+                new BattleUnitBuf_KamiyoImmunityToStatusAlimentUntilRoundEnd());
             _model.Owner.bufListDetail.AddBufWithoutDuplication(new BattleUnitBuf_KamiyoImmortalUntilRoundEnd());
         }
 

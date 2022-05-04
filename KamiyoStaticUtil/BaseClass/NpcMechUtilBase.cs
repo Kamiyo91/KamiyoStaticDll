@@ -26,11 +26,11 @@ namespace KamiyoStaticUtil.BaseClass
         {
             if (_model.Owner.hp - dmg > _model.MechHp || !_model.HasMechOnHp) return;
             _model.HasMechOnHp = false;
-            _model.Owner.bufListDetail.AddBufWithoutDuplication(new BattleUnitBuf_KamiyoImmortalUntilRoundEnd());
             _model.Owner.SetHp(_model.MechHp);
             _model.Owner.breakDetail.ResetGauge();
             _model.Owner.breakDetail.RecoverBreakLife(1, true);
             _model.Owner.breakDetail.nextTurnBreak = false;
+            _model.Owner.bufListDetail.AddBufWithoutDuplication(new BattleUnitBuf_KamiyoImmortalUntilRoundEnd());
         }
 
         public override void SurviveCheck(int dmg)
@@ -38,11 +38,11 @@ namespace KamiyoStaticUtil.BaseClass
             if (_model.Owner.hp - dmg > _model.Hp || !_model.Survive) return;
             _model.Survive = false;
             if (_model.ReloadMassAttackOnLethal) SetCounter(_model.MaxCounter);
-            _model.Owner.bufListDetail.AddBufWithoutDuplication(new BattleUnitBuf_KamiyoImmortalUntilRoundEnd());
             _model.Owner.SetHp(_model.SetHp);
             _model.Owner.breakDetail.ResetGauge();
             _model.Owner.breakDetail.RecoverBreakLife(1, true);
             _model.Owner.breakDetail.nextTurnBreak = false;
+            _model.Owner.bufListDetail.AddBufWithoutDuplication(new BattleUnitBuf_KamiyoImmortalUntilRoundEnd());
             if (_model.HasSurviveAbDialog)
                 UnitUtil.BattleAbDialog(_model.Owner.view.dialogUI, _model.SurviveAbDialogList,
                     _model.SurviveAbDialogColor);

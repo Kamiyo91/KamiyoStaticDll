@@ -65,7 +65,7 @@ namespace KamiyoStaticBLL.Models
         public static List<LorId> SupportCharPassive = new List<LorId>();
         public static List<LorId> NoTargetSupportCharPassive = new List<LorId>();
         public static bool ChangedMultiView = false;
-
+        public static Dictionary<string, Type> CustomEffects = new Dictionary<string, Type>();
         public static List<BattleCharacterProfileUI> EnemyProfileArray2 = new List<BattleCharacterProfileUI>();
         public static List<BattleCharacterProfileUI> AllyProfileArray2 = new List<BattleCharacterProfileUI>();
         public static List<BattleEmotionCoinUI.BattleEmotionCoinData> Enemy2 =

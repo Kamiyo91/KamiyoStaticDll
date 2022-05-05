@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Battle.DiceAttackEffect;
 using HarmonyLib;
 using KamiyoStaticBLL.Enums;
 using KamiyoStaticBLL.Models;
@@ -636,6 +637,20 @@ namespace KamiyoStaticHarmony.Harmony
             }
 
             return true;
+        }
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(DiceEffectManager), "CreateBehaviourEffect")]
+        public static void DiceEffectManager_CreateBehaviourEffect(ref DiceAttackEffect __result, string resource,
+            float scaleFactor, BattleUnitView self, BattleUnitView target, float time)
+        {
+            if (string.IsNullOrEmpty(resource) || __result != null ||
+                !ModParameters.CustomEffects.ContainsKey(resource)) return;
+            var componentType = ModParameters.CustomEffects[resource];
+            var diceAttackEffect = new GameObject(resource).AddComponent(componentType) as DiceAttackEffect;
+            if (diceAttackEffect == null) return;
+            diceAttackEffect.Initialize(self, target, time);
+            diceAttackEffect.SetScale(scaleFactor);
+            __result = diceAttackEffect;
         }
     }
 }

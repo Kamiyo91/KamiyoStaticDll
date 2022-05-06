@@ -262,6 +262,16 @@ namespace KamiyoStaticHarmony.Harmony
         }
 
         [HarmonyPostfix]
+        [HarmonyPatch(typeof(BattleUnitModel), "CanChangeAttackTarget")]
+        public static void BattleUnitModel_CanChangeAttackTarget(BattleUnitModel __instance, BattleUnitModel target,
+            int myIndex, ref bool __result)
+        {
+            if (__instance == null) return;
+            var slottedCard = __instance.cardSlotDetail.cardAry[myIndex];
+            var cardAbility = slottedCard?.card.CreateDiceCardSelfAbilityScript();
+            if (cardAbility != null && !cardAbility.IsTargetChangable(target)) __result = false;
+        }
+        [HarmonyPostfix]
         [HarmonyPatch(typeof(BattleUnitEmotionDetail), "CanForcelyAggro")]
         public static void BattleUnitEmotionDetail_CanForcelyAggro(BattleUnitEmotionDetail __instance,
             BattleUnitModel ____self,

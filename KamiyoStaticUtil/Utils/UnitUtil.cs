@@ -689,25 +689,27 @@ namespace KamiyoStaticUtil.Utils
                     .Do(x => dictionary[x.Name.Replace("DiceCardSelfAbility_", "")] =
                         new List<string>(((DiceCardSelfAbilityBase)Activator.CreateInstance(x)).Keywords));
         }
+
         public static void InitKeywordsList(List<Assembly> assemblies)
         {
             foreach (var assembly in assemblies)
                 if (typeof(BattleCardAbilityDescXmlList).GetField("_dictionaryKeywordCache", AccessTools.all)
-                        ?.GetValue(BattleCardAbilityDescXmlList.Instance) is Dictionary<string, List<string>> dictionary)
+                        ?.GetValue(BattleCardAbilityDescXmlList.Instance) is Dictionary<string, List<string>>
+                    dictionary)
                     assembly.GetTypes().Where(x => x.IsSubclassOf(typeof(DiceCardSelfAbilityBase))
                                                    && x.Name.StartsWith("DiceCardSelfAbility_"))
                         .Do(x => dictionary[x.Name.Replace("DiceCardSelfAbility_", "")] =
                             new List<string>(((DiceCardSelfAbilityBase)Activator.CreateInstance(x)).Keywords));
-            
         }
+
         public static void InitCustomEffects(List<Assembly> assemblies)
         {
             foreach (var assembly in assemblies)
-                    assembly.GetTypes().ToList().FindAll(x => x.Name.StartsWith("DiceAttackEffect_"))
-                .ForEach(delegate (Type x) //Creating Custom Effects
-                {
-                    ModParameters.CustomEffects[x.Name.Replace("DiceAttackEffect_", "")] = x;
-                });
+                assembly.GetTypes().ToList().FindAll(x => x.Name.StartsWith("DiceAttackEffect_"))
+                    .ForEach(delegate(Type x) //Creating Custom Effects
+                    {
+                        ModParameters.CustomEffects[x.Name.Replace("DiceAttackEffect_", "")] = x;
+                    });
         }
 
         public static int SupportCharCheck(BattleUnitModel owner, bool otherSide = false)
@@ -737,6 +739,18 @@ namespace KamiyoStaticUtil.Utils
                     x.passiveDetail.PassiveList.Exists(y => y.id == passiveId));
             return playerUnit != null && playerUnit.bufListDetail.GetActivatedBufList()
                 .Exists(x => !x.IsDestroyed() && x.GetType() == buffType);
+        }
+
+        public static void ChangeLoneFixerPassive(Faction unitFaction, LorId passiveId)
+        {
+            foreach (var unit in BattleObjectManager.instance.GetAliveList(unitFaction))
+            {
+                if (!(unit.passiveDetail.PassiveList.Find(x => !x.destroyed && x is PassiveAbility_230008) is
+                        PassiveAbility_230008
+                        passiveLone)) continue;
+                unit.passiveDetail.DestroyPassive(passiveLone);
+                unit.passiveDetail.AddPassive(passiveId);
+            }
         }
     }
 }

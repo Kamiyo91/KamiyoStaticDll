@@ -506,6 +506,7 @@ namespace KamiyoStaticHarmony.Harmony
                         v = Vector2.one * d * 0.005f;
                         uicharacter.unitAppearance.transform.localScale = v;
                     }
+
                     __result = __instance.cameraList[index].targetTexture;
                     return false;
                 }

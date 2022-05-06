@@ -228,10 +228,10 @@ namespace KamiyoStaticHarmony.Harmony
             }
 
             var passiveItemExtra =
-                ModParameters.ExtraConditionPassives.FirstOrDefault(x =>
+                ModParameters.ExtraConditionPassives.Where(x =>
                     x.Item1 == targetpassive.originData.currentpassive.id);
-            if (passiveItemExtra == null || !__instance.GetPassiveModelList()
-                    .Exists(x => passiveItemExtra.Item2 == x.reservedData.currentpassive.id)) return;
+            if (!__instance.GetPassiveModelList()
+                    .Exists(x => passiveItemExtra.Any(y => y.Item2.Contains(x.reservedData.currentpassive.id)))) return;
             haspassiveState = GivePassiveState.Lock;
             __result = false;
         }
@@ -259,6 +259,16 @@ namespace KamiyoStaticHarmony.Harmony
         {
             __result = __instance.Unitdata != null && __instance.Unitdata.bookItem.GetPassiveInfoList()
                 .Exists(x => ModParameters.MultiDeckPassiveIds.Contains(x.passive.id)) || __result;
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(BattleUnitEmotionDetail), "CanForcelyAggro")]
+        public static void BattleUnitEmotionDetail_CanForcelyAggro(BattleUnitEmotionDetail __instance,
+            BattleUnitModel ____self,
+            ref bool __result)
+        {
+            __result = ____self != null && ____self.passiveDetail.PassiveList
+                .Exists(x => ModParameters.ForceAggroPassiveIds.Contains(x.id)) || __result;
         }
 
         [HarmonyPrefix]
@@ -638,6 +648,7 @@ namespace KamiyoStaticHarmony.Harmony
 
             return true;
         }
+
         [HarmonyPostfix]
         [HarmonyPatch(typeof(DiceEffectManager), "CreateBehaviourEffect")]
         public static void DiceEffectManager_CreateBehaviourEffect(ref DiceAttackEffect __result, string resource,

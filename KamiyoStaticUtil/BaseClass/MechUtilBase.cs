@@ -38,11 +38,11 @@ namespace KamiyoStaticUtil.BaseClass
         {
             if (_model.Owner.bufListDetail.HasAssimilation()) return;
             _model.EgoActivated = false;
-            if (_model.IsSummonEgo && BattleObjectManager.instance.GetAliveList(Faction.Player).Count > 1)
-            {
-                _model.Owner.personalEgoDetail.AddCard(_model.SecondaryEgoCardId);
-                return;
-            }
+            //if (_model.IsSummonEgo && BattleObjectManager.instance.GetAliveList(Faction.Player).Count > 1)
+            //{
+            //    _model.Owner.personalEgoDetail.AddCard(_model.SecondaryEgoCardId);
+            //    return;
+            //}
 
             if (!string.IsNullOrEmpty(_model.SkinName)) _model.Owner.view.SetAltSkin(_model.SkinName);
             _model.Owner.bufListDetail.AddBufWithoutDuplication(

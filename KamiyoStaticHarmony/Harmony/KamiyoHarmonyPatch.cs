@@ -271,6 +271,7 @@ namespace KamiyoStaticHarmony.Harmony
             var cardAbility = slottedCard?.card.CreateDiceCardSelfAbilityScript();
             if (cardAbility != null && !cardAbility.IsTargetChangable(target)) __result = false;
         }
+
         [HarmonyPostfix]
         [HarmonyPatch(typeof(BattleUnitEmotionDetail), "CanForcelyAggro")]
         public static void BattleUnitEmotionDetail_CanForcelyAggro(BattleUnitEmotionDetail __instance,
@@ -672,6 +673,17 @@ namespace KamiyoStaticHarmony.Harmony
             diceAttackEffect.Initialize(self, target, time);
             diceAttackEffect.SetScale(scaleFactor);
             __result = diceAttackEffect;
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(BattleObjectManager), "GetTargetByCardForPlayer")]
+        public static void BattleObjectManager_GetTargetByCardForPlayer(BattleUnitModel actor, BattleDiceCardModel card,
+            int idx, ref BattleUnitModel __result)
+        {
+            if (!ModParameters.OnlyAllyTargetCardIds.Contains(card.GetID())) return;
+            var units = BattleObjectManager.instance.GetAliveList(actor.faction);
+            if (units == null) return;
+            __result = actor.targetSetter.SelectTargetUnit(units);
         }
     }
 }

@@ -683,7 +683,9 @@ namespace KamiyoStaticHarmony.Harmony
             if (!ModParameters.OnlyAllyTargetCardIds.Contains(card.GetID())) return;
             var units = BattleObjectManager.instance.GetAliveList(actor.faction);
             if (units == null) return;
-            __result = actor.targetSetter.SelectTargetUnit(units);
+            units.RemoveAll(x => x == actor);
+            if (units.Any())
+                __result = actor.targetSetter.SelectTargetUnit(units);
         }
     }
 }

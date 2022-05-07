@@ -254,6 +254,35 @@ namespace KamiyoStaticUtil.Utils
             return allyUnit;
         }
 
+        public static BattleUnitModel AddNewUnitWithPreUnitData(StageLibraryFloorModel floor, UnitModel unit,
+            UnitDataModel unitData,bool playerSide = true)
+        {
+            unitData.SetCustomName(unit.Name);
+            var allyUnit = BattleObjectManager.CreateDefaultUnit(playerSide ? Faction.Player : Faction.Enemy);
+            allyUnit.index = unit.Pos;
+            allyUnit.grade = unitData.grade;
+            allyUnit.formation = unit.CustomPos != null
+                ? new FormationPosition(new FormationPositionXmlData
+                {
+                    vector = unit.CustomPos
+                })
+                : floor.GetFormationPosition(allyUnit.index);
+            var unitBattleData = new UnitBattleDataModel(Singleton<StageController>.Instance.GetStageModel(), unitData);
+            unitBattleData.Init();
+            allyUnit.SetUnitData(unitBattleData);
+            allyUnit.OnCreated();
+            BattleObjectManager.instance.RegisterUnit(allyUnit);
+            allyUnit.passiveDetail.OnUnitCreated();
+            LevelUpEmotion(allyUnit, unit.EmotionLevel);
+            if (unit.LockedEmotion)
+                allyUnit.emotionDetail.SetMaxEmotionLevel(unit.MaxEmotionLevel);
+            allyUnit.allyCardDetail.DrawCards(allyUnit.UnitData.unitData.GetStartDraw());
+            allyUnit.cardSlotDetail.RecoverPlayPoint(allyUnit.cardSlotDetail.GetMaxPlayPoint());
+            if (unit.AddEmotionPassive)
+                AddEmotionPassives(allyUnit);
+            allyUnit.OnWaveStart();
+            return allyUnit;
+        }
         public static void TestingUnitValuesImmortality()
         {
             var playerUnit = BattleObjectManager.instance.GetAliveList(Faction.Player);

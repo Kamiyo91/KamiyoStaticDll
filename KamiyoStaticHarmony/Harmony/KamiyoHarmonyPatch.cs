@@ -678,10 +678,11 @@ namespace KamiyoStaticHarmony.Harmony
         [HarmonyPostfix]
         [HarmonyPatch(typeof(BattleObjectManager), "GetTargetByCardForPlayer")]
         public static void BattleObjectManager_GetTargetByCardForPlayer(BattleUnitModel actor, BattleDiceCardModel card,
-            int idx, ref BattleUnitModel __result)
+            ref BattleUnitModel __result)
         {
             if (!ModParameters.OnlyAllyTargetCardIds.Contains(card.GetID())) return;
-            var units = BattleObjectManager.instance.GetAliveList(actor.faction);
+            var factions = new List<Faction> { Faction.Player, Faction.Enemy };
+            var units = BattleObjectManager.instance.GetAliveList(actor.IsControlable() ? actor.faction : RandomUtil.SelectOne(factions));
             if (units == null) return;
             units.RemoveAll(x => x == actor);
             if (units.Any())

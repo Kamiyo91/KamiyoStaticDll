@@ -481,6 +481,14 @@ namespace KamiyoStaticHarmony.Harmony
                     Singleton<BookInventoryModel>.Instance.CreateBook(keypageId);
                 }
 
+            if (parameters.Value.DroppedCards != null)
+                foreach (var card in parameters.Value.DroppedCards.Where(x =>
+                             Singleton<InventoryModel>.Instance.GetCardCount(x.CardId) < 1))
+                {
+                    if (!message) message = true;
+                    Singleton<InventoryModel>.Instance.AddCard(card.CardId,card.Quantity);
+                }
+
             if (message)
                 UIAlarmPopup.instance.SetAlarmText(ModParameters.EffectTexts.FirstOrDefault(x =>
                         x.Key.Contains(parameters.Value.MessageId))

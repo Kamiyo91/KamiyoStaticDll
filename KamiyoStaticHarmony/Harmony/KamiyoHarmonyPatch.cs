@@ -486,7 +486,7 @@ namespace KamiyoStaticHarmony.Harmony
                              Singleton<InventoryModel>.Instance.GetCardCount(x.CardId) < 1))
                 {
                     if (!message) message = true;
-                    Singleton<InventoryModel>.Instance.AddCard(card.CardId,card.Quantity);
+                    Singleton<InventoryModel>.Instance.AddCard(card.CardId, card.Quantity);
                 }
 
             if (message)
@@ -690,7 +690,9 @@ namespace KamiyoStaticHarmony.Harmony
         {
             if (!ModParameters.OnlyAllyTargetCardIds.Contains(card.GetID())) return;
             var factions = new List<Faction> { Faction.Player, Faction.Enemy };
-            var units = BattleObjectManager.instance.GetAliveList(!actor.IsControlable() && teamkill ? RandomUtil.SelectOne(factions) :  actor.faction);
+            var units = BattleObjectManager.instance.GetAliveList(!actor.IsControlable() && teamkill
+                ? RandomUtil.SelectOne(factions)
+                : actor.faction);
             if (units == null) return;
             units.RemoveAll(x => x == actor);
             if (units.Any())

@@ -285,6 +285,7 @@ namespace KamiyoStaticUtil.Utils
             allyUnit.OnWaveStart();
             return allyUnit;
         }
+
         public static void TestingUnitValuesImmortality()
         {
             var playerUnit = BattleObjectManager.instance.GetAliveList(Faction.Player);
@@ -504,11 +505,15 @@ namespace KamiyoStaticUtil.Utils
                          .Select(x => x.Item2)) onlyPageCardList.AddRange(cardIds);
             return onlyPageCardList;
         }
+
         private static IEnumerable<string> SetDefaultKeyword(LorId id)
         {
             var defaultKeyword = ModParameters.DefaultKeyword.FirstOrDefault(x => x.Key == id.packageId);
-            return string.IsNullOrEmpty(defaultKeyword.Value) ? new List<string>() : new List<string> { defaultKeyword.Value };
+            return string.IsNullOrEmpty(defaultKeyword.Value)
+                ? new List<string>()
+                : new List<string> { defaultKeyword.Value };
         }
+
         private static IEnumerable<string> GetKeywordsListNoDefault(LorId id)
         {
             var keywordLists = ModParameters.OnlyCardKeywords.Where(x => x.Item2.Contains(id))?.Select(x => x.Item1);
@@ -531,6 +536,7 @@ namespace KamiyoStaticUtil.Utils
                     return index < 0 ? 9999 : index;
                 }).ToList();
             }
+
             return new DiceCardXmlInfo(cardXml.id)
             {
                 workshopID = cardXml.workshopID,
@@ -574,6 +580,7 @@ namespace KamiyoStaticUtil.Utils
                 Debug.LogError("There was an error while changing the Cards values " + ex.Message);
             }
         }
+
         public static void ChangeCardItem(ItemXmlDataList instance, string packageId)
         {
             string debugId = null;
@@ -601,10 +608,9 @@ namespace KamiyoStaticUtil.Utils
                     }
 
                     if (ModParameters.EgoPersonalCardList.Contains(item.Key))
-                    {
                         SetCustomCardOption(CardOption.EgoPersonal, item.Key, false, ref dictionary, ref list);
-                    }
                 }
+
                 try
                 {
                     foreach (var item in dictionary.Where(x => onlyPageCardList.Contains(x.Key)).ToList())
@@ -615,12 +621,14 @@ namespace KamiyoStaticUtil.Utils
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogError("There was an error while changing the Cards values " + ex.Message + " cardId : " + debugId);
+                    Debug.LogError("There was an error while changing the Cards values " + ex.Message + " cardId : " +
+                                   debugId);
                 }
             }
             catch (Exception ex)
             {
-                Debug.LogError("There was an error while changing the Cards values " + ex.Message + " cardId : " + debugId);
+                Debug.LogError("There was an error while changing the Cards values " + ex.Message + " cardId : " +
+                               debugId);
             }
         }
 
@@ -631,10 +639,10 @@ namespace KamiyoStaticUtil.Utils
                          ModParameters.UntransferablePassives.Contains(passive.id)))
                 passive.CanGivePassive = false;
             foreach (var item in ModParameters.SameInnerIdPassives)
-                foreach (var passive in Singleton<PassiveXmlList>.Instance.GetDataAll().Where(passive =>
-                             passive.id.packageId == packageId &&
-                             item.Value.Contains(passive.id)))
-                    passive.InnerTypeId = item.Key;
+            foreach (var passive in Singleton<PassiveXmlList>.Instance.GetDataAll().Where(passive =>
+                         passive.id.packageId == packageId &&
+                         item.Value.Contains(passive.id)))
+                passive.InnerTypeId = item.Key;
         }
 
         public static void RemoveDiceTargets(BattleUnitModel unit)
@@ -764,7 +772,7 @@ namespace KamiyoStaticUtil.Utils
         {
             foreach (var assembly in assemblies)
                 assembly.GetTypes().ToList().FindAll(x => x.Name.StartsWith("DiceAttackEffect_"))
-                    .ForEach(delegate (Type x) //Creating Custom Effects
+                    .ForEach(delegate(Type x) //Creating Custom Effects
                     {
                         ModParameters.CustomEffects[x.Name.Replace("DiceAttackEffect_", "")] = x;
                     });

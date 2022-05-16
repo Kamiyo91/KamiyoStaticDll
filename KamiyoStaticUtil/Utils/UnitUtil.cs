@@ -74,6 +74,8 @@ namespace KamiyoStaticUtil.Utils
 
         public static void VipDeathPlayer()
         {
+            foreach (var unit in BattleObjectManager.instance.GetAliveList(Faction.Player))
+                unit.Die();
             StageController.Instance.GetCurrentStageFloorModel().Defeat();
             StageController.Instance.EndBattle();
         }
@@ -255,7 +257,7 @@ namespace KamiyoStaticUtil.Utils
         }
 
         public static BattleUnitModel AddNewUnitWithPreUnitData(StageLibraryFloorModel floor, UnitModel unit,
-            UnitDataModel unitData,bool playerSide = true)
+            UnitDataModel unitData, bool playerSide = true)
         {
             unitData.SetCustomName(unit.Name);
             var allyUnit = BattleObjectManager.CreateDefaultUnit(playerSide ? Faction.Player : Faction.Enemy);
@@ -476,7 +478,7 @@ namespace KamiyoStaticUtil.Utils
         private static void SetBaseKeywordCard(LorId id, ref Dictionary<LorId, DiceCardXmlInfo> cardDictionary,
             ref List<DiceCardXmlInfo> cardXmlList)
         {
-            var keywordsList = GetKeywordsList(id).ToList();
+            var keywordsList = SetDefaultKeyword(id);
             var diceCardXmlInfo2 = CardOptionChange(cardDictionary[id], new List<CardOption>(), true, keywordsList);
             cardDictionary[id] = diceCardXmlInfo2;
             cardXmlList.Add(diceCardXmlInfo2);
@@ -486,7 +488,7 @@ namespace KamiyoStaticUtil.Utils
             ref Dictionary<LorId, DiceCardXmlInfo> cardDictionary, ref List<DiceCardXmlInfo> cardXmlList)
         {
             var keywordsList = new List<string>();
-            if (keywordsRequired) keywordsList = GetKeywordsList(id).ToList();
+            if (keywordsRequired) keywordsList = GetKeywordsListNoDefault(id).ToList();
             var diceCardXmlInfo2 = CardOptionChange(cardDictionary[id], new List<CardOption> { option },
                 keywordsRequired,
                 keywordsList);
@@ -494,28 +496,40 @@ namespace KamiyoStaticUtil.Utils
             cardXmlList.Add(diceCardXmlInfo2);
         }
 
-        private static List<LorId> GetAllOnlyCardsId()
+        private static List<LorId> GetAllOnlyCardsIdByModId(string packageId)
         {
             var onlyPageCardList = new List<LorId>();
-            foreach (var cardIds in ModParameters.OnlyCardKeywords.Select(x => x.Item2))
-                onlyPageCardList.AddRange(cardIds);
+            foreach (var cardIds in ModParameters.OnlyCardKeywords.Where(x => x.Item3.packageId == packageId)
+                         .Select(x => x.Item2)) onlyPageCardList.AddRange(cardIds);
             return onlyPageCardList;
         }
-
-        private static IEnumerable<string> GetKeywordsList(LorId id)
+        private static IEnumerable<string> SetDefaultKeyword(LorId id)
         {
-            var keywords = ModParameters.OnlyCardKeywords.FirstOrDefault(x => x.Item2.Contains(id))?.Item1;
             var defaultKeyword = ModParameters.DefaultKeyword.FirstOrDefault(x => x.Key == id.packageId);
-            var stringList = new List<string> { defaultKeyword.Value };
-            if (keywords != null && keywords.Any())
+            return new List<string> { defaultKeyword.Value };
+        }
+        private static IEnumerable<string> GetKeywordsListNoDefault(LorId id)
+        {
+            var keywordLists = ModParameters.OnlyCardKeywords.Where(x => x.Item2.Contains(id))?.Select(x => x.Item1);
+            var stringList = new List<string>();
+            foreach (var keywords in keywordLists)
                 stringList.AddRange(keywords);
             return stringList;
         }
 
         private static DiceCardXmlInfo CardOptionChange(DiceCardXmlInfo cardXml, List<CardOption> option,
-            bool keywordRequired, List<string> keywords,
+            bool keywordRequired, IEnumerable<string> keywords,
             string skinName = "", string mapName = "", int skinHeight = 0)
         {
+            if (keywordRequired)
+            {
+                cardXml.Keywords.AddRange(keywords.Where(x => !cardXml.Keywords.Contains(x)));
+                cardXml.Keywords = cardXml.Keywords.OrderBy(x =>
+                {
+                    var index = x.IndexOf("ModPage", StringComparison.InvariantCultureIgnoreCase);
+                    return index < 0 ? 9999 : index;
+                }).ToList();
+            }
             return new DiceCardXmlInfo(cardXml.id)
             {
                 workshopID = cardXml.workshopID,
@@ -537,11 +551,11 @@ namespace KamiyoStaticUtil.Utils
                 SkinHeight = skinHeight != 0 ? skinHeight : cardXml.SkinHeight,
                 MapChange = string.IsNullOrEmpty(mapName) ? cardXml.MapChange : mapName,
                 PriorityScript = cardXml.PriorityScript,
-                Keywords = keywordRequired ? keywords : cardXml.Keywords
+                Keywords = cardXml.Keywords
             };
         }
 
-        public static void ChangeCardItem(ItemXmlDataList instance, string packageId)
+        public static void ChangeBaseCardItem(ItemXmlDataList instance)
         {
             try
             {
@@ -553,9 +567,26 @@ namespace KamiyoStaticUtil.Utils
                              .Where(item => ModParameters.OriginalNoInventoryCardList.Contains(item.Key))
                              .ToList())
                     SetCustomCardOption(CardOption.NoInventory, item.Key, false, ref dictionary, ref list);
-                var onlyPageCardList = GetAllOnlyCardsId();
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError("There was an error while changing the Cards values " + ex.Message);
+            }
+        }
+        public static void ChangeCardItem(ItemXmlDataList instance, string packageId)
+        {
+            string debugId = null;
+            try
+            {
+                var dictionary = (Dictionary<LorId, DiceCardXmlInfo>)instance.GetType()
+                    .GetField("_cardInfoTable", AccessTools.all).GetValue(instance);
+                var list = (List<DiceCardXmlInfo>)instance.GetType()
+                    .GetField("_cardInfoList", AccessTools.all).GetValue(instance);
+                var onlyPageCardList = GetAllOnlyCardsIdByModId(packageId);
                 foreach (var item in dictionary.Where(x => x.Key.packageId == packageId).ToList())
                 {
+                    debugId = $"{item.Key.packageId} + {item.Key.id}";
+                    SetBaseKeywordCard(item.Key, ref dictionary, ref list);
                     if (ModParameters.NoInventoryCardList.Contains(item.Key))
                     {
                         SetCustomCardOption(CardOption.NoInventory, item.Key, false, ref dictionary, ref list);
@@ -571,27 +602,24 @@ namespace KamiyoStaticUtil.Utils
                     if (ModParameters.EgoPersonalCardList.Contains(item.Key))
                     {
                         SetCustomCardOption(CardOption.EgoPersonal, item.Key, false, ref dictionary, ref list);
-                        continue;
                     }
-
-                    if (ModParameters.NoInventoryCardList.Contains(item.Key))
+                }
+                try
+                {
+                    foreach (var item in dictionary.Where(x => onlyPageCardList.Contains(x.Key)).ToList())
                     {
-                        SetCustomCardOption(CardOption.NoInventory, item.Key, false, ref dictionary, ref list);
-                        continue;
-                    }
-
-                    if (onlyPageCardList.Contains(item.Key))
-                    {
+                        debugId = $"{item.Key.packageId} + {item.Key.id}";
                         SetCustomCardOption(CardOption.OnlyPage, item.Key, true, ref dictionary, ref list);
-                        continue;
                     }
-
-                    SetBaseKeywordCard(item.Key, ref dictionary, ref list);
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError("There was an error while changing the Cards values " + ex.Message + " cardId : " + debugId);
                 }
             }
             catch (Exception ex)
             {
-                Debug.LogError("There was an error while changing the Cards values " + ex.Message);
+                Debug.LogError("There was an error while changing the Cards values " + ex.Message + " cardId : " + debugId);
             }
         }
 
@@ -602,10 +630,10 @@ namespace KamiyoStaticUtil.Utils
                          ModParameters.UntransferablePassives.Contains(passive.id)))
                 passive.CanGivePassive = false;
             foreach (var item in ModParameters.SameInnerIdPassives)
-            foreach (var passive in Singleton<PassiveXmlList>.Instance.GetDataAll().Where(passive =>
-                         passive.id.packageId == packageId &&
-                         item.Value.Contains(passive.id)))
-                passive.InnerTypeId = item.Key;
+                foreach (var passive in Singleton<PassiveXmlList>.Instance.GetDataAll().Where(passive =>
+                             passive.id.packageId == packageId &&
+                             item.Value.Contains(passive.id)))
+                    passive.InnerTypeId = item.Key;
         }
 
         public static void RemoveDiceTargets(BattleUnitModel unit)
@@ -735,7 +763,7 @@ namespace KamiyoStaticUtil.Utils
         {
             foreach (var assembly in assemblies)
                 assembly.GetTypes().ToList().FindAll(x => x.Name.StartsWith("DiceAttackEffect_"))
-                    .ForEach(delegate(Type x) //Creating Custom Effects
+                    .ForEach(delegate (Type x) //Creating Custom Effects
                     {
                         ModParameters.CustomEffects[x.Name.Replace("DiceAttackEffect_", "")] = x;
                     });

@@ -478,7 +478,8 @@ namespace KamiyoStaticUtil.Utils
         private static void SetBaseKeywordCard(LorId id, ref Dictionary<LorId, DiceCardXmlInfo> cardDictionary,
             ref List<DiceCardXmlInfo> cardXmlList)
         {
-            var keywordsList = SetDefaultKeyword(id);
+            var keywordsList = SetDefaultKeyword(id).ToList();
+            if (!keywordsList.Any()) return;
             var diceCardXmlInfo2 = CardOptionChange(cardDictionary[id], new List<CardOption>(), true, keywordsList);
             cardDictionary[id] = diceCardXmlInfo2;
             cardXmlList.Add(diceCardXmlInfo2);
@@ -506,7 +507,7 @@ namespace KamiyoStaticUtil.Utils
         private static IEnumerable<string> SetDefaultKeyword(LorId id)
         {
             var defaultKeyword = ModParameters.DefaultKeyword.FirstOrDefault(x => x.Key == id.packageId);
-            return new List<string> { defaultKeyword.Value };
+            return string.IsNullOrEmpty(defaultKeyword.Value) ? new List<string>() : new List<string> { defaultKeyword.Value };
         }
         private static IEnumerable<string> GetKeywordsListNoDefault(LorId id)
         {

@@ -11,6 +11,7 @@ namespace KamiyoStaticBLL.Models
         public static List<string> PackageIds = new List<string>();
         public static Dictionary<string, Sprite> ArtWorks = new Dictionary<string, Sprite>();
         public static List<string> Path = new List<string>();
+        public static Dictionary<string, string> LocalizePackageIdAndPath = new Dictionary<string, string>();
         public static string Language = GlobalGameManager.Instance.CurrentOption.language;
 
         public static readonly Dictionary<string, EffectTextModel> EffectTexts =

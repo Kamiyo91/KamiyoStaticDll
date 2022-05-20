@@ -84,7 +84,8 @@ namespace KamiyoStaticBLL.Models
         public static Dictionary<string, Type> CustomEffects = new Dictionary<string, Type>();
         public static List<LorId> ForceAggroPassiveIds = new List<LorId>();
         public static List<LorId> OnlyAllyTargetCardIds = new List<LorId>();
-        public static Dictionary<string, AssetBundle> AssetBundle;
+        public static Dictionary<string, AssetBundle> AssetBundle = new Dictionary<string, AssetBundle>();
+        public static List<BattleUnitBuf> SpecialCaseNoEgoFloor = new List<BattleUnitBuf>();
 
         public static List<BattleCharacterProfileUI> EnemyProfileArray2 = new List<BattleCharacterProfileUI>();
         public static List<BattleCharacterProfileUI> AllyProfileArray2 = new List<BattleCharacterProfileUI>();

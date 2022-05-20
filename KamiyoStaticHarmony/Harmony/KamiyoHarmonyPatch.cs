@@ -443,6 +443,9 @@ namespace KamiyoStaticHarmony.Harmony
             __instance.charAppearance.ChangeLayer("Character");
             __instance.charAppearance.SetLibrarianOnlySprites(__instance.model.faction);
             __instance.model.UnitData.unitData.bookItem.ClassInfo.CharacterSkin = new List<string> { charName };
+            var customHeight = ModParameters.SkinsCustomHeights.FirstOrDefault(x => x.Key == charName);
+            if (customHeight.Equals(default)) return;
+            __instance.ChangeHeight(customHeight.Value);
         }
 
         [HarmonyPostfix]
@@ -503,9 +506,7 @@ namespace KamiyoStaticHarmony.Harmony
         {
             if (__instance.CurrentHandState != BattleUnitCardsInHandUI.HandState.EgoCard) return;
             var unit = __instance.SelectedModel ?? __instance.HOveredModel;
-            var unitBuffs = unit.bufListDetail.GetActivatedBufList();
-            if (!ModParameters.SpecialCaseNoEgoFloor.Intersect(unitBuffs).Any() ||
-                !ModParameters.NoEgoFloorUnit.Contains(unit.UnitData.unitData.bookItem.BookId)) return;
+            if (!ModParameters.NoEgoFloorUnit.Contains(unit.UnitData.unitData.bookItem.BookId)) return;
             var list = SkinUtil.ReloadEgoHandUI(__instance, __instance.GetCardUIList(), unit, ____activatedCardList,
                 ref ____xInterval).ToList();
             __instance.SetSelectedCardUI(null);

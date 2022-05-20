@@ -504,9 +504,8 @@ namespace KamiyoStaticHarmony.Harmony
             if (__instance.CurrentHandState != BattleUnitCardsInHandUI.HandState.EgoCard) return;
             var unit = __instance.SelectedModel ?? __instance.HOveredModel;
             var unitBuffs = unit.bufListDetail.GetActivatedBufList();
-            if (!ModParameters.PackageIds.Contains(unit.UnitData.unitData.bookItem.BookId.packageId) ||
-                !ModParameters.NoEgoFloorUnit.Contains(unit.UnitData.unitData.bookItem.BookId) &&
-            !ModParameters.SpecialCaseNoEgoFloor.Intersect(unitBuffs).Any()) return;
+            if (!ModParameters.SpecialCaseNoEgoFloor.Intersect(unitBuffs).Any() ||
+                !ModParameters.NoEgoFloorUnit.Contains(unit.UnitData.unitData.bookItem.BookId)) return;
             var list = SkinUtil.ReloadEgoHandUI(__instance, __instance.GetCardUIList(), unit, ____activatedCardList,
                 ref ____xInterval).ToList();
             __instance.SetSelectedCardUI(null);

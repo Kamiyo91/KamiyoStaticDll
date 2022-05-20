@@ -16,6 +16,7 @@ namespace KamiyoStaticUtil.Utils
         {
             foreach (var item in ModParameters.LocalizePackageIdAndPath)
             {
+                var error = false;
                 FileInfo[] files;
                 try
                 {
@@ -25,6 +26,7 @@ namespace KamiyoStaticUtil.Utils
                             Dictionary<string, BattleEffectText>;
                     files = new DirectoryInfo(item.Value + "/Localize/" + ModParameters.Language + "/EffectTexts")
                         .GetFiles();
+                    error = true;
                     foreach (var t in files)
                         using (var stringReader = new StringReader(File.ReadAllText(t.FullName)))
                         {
@@ -43,14 +45,17 @@ namespace KamiyoStaticUtil.Utils
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogError("Error loading Effect Texts packageId : " + item.Key + " Language : " +
-                                   ModParameters.Language + " Error : " + ex.Message);
+                    if (error)
+                        Debug.LogError("Error loading Effect Texts packageId : " + item.Key + " Language : " +
+                                       ModParameters.Language + " Error : " + ex.Message);
                 }
 
                 try
                 {
+                    error = false;
                     files = new DirectoryInfo(item.Value + "/Localize/" + ModParameters.Language + "/BattlesCards")
                         .GetFiles();
+                    error = true;
                     foreach (var t in files)
                         using (var stringReader2 = new StringReader(File.ReadAllText(t.FullName)))
                         {
@@ -87,18 +92,21 @@ namespace KamiyoStaticUtil.Utils
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogError("Error loading Battle Cards Texts packageId : " + item.Key + " Language : " +
-                                   ModParameters.Language + " Error : " + ex.Message);
+                    if (error)
+                        Debug.LogError("Error loading Battle Cards Texts packageId : " + item.Key + " Language : " +
+                                       ModParameters.Language + " Error : " + ex.Message);
                 }
 
                 try
                 {
+                    error = false;
                     files = new DirectoryInfo(item.Value + "/Localize/" + ModParameters.Language + "/BattleDialog")
                         .GetFiles();
                     var dialogDictionary =
                         (Dictionary<string, BattleDialogRoot>)BattleDialogXmlList.Instance.GetType()
                             .GetField("_dictionary", AccessTools.all)
                             ?.GetValue(BattleDialogXmlList.Instance);
+                    error = true;
                     foreach (var t in files)
                         using (var stringReader = new StringReader(File.ReadAllText(t.FullName)))
                         {
@@ -131,14 +139,17 @@ namespace KamiyoStaticUtil.Utils
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogError("Error loading Battle Dialogs Texts packageId : " + item.Key + " Language : " +
-                                   ModParameters.Language + " Error : " + ex.Message);
+                    if (error)
+                        Debug.LogError("Error loading Battle Dialogs Texts packageId : " + item.Key + " Language : " +
+                                       ModParameters.Language + " Error : " + ex.Message);
                 }
 
                 try
                 {
+                    error = false;
                     files = new DirectoryInfo(item.Value + "/Localize/" + ModParameters.Language + "/CharactersName")
                         .GetFiles();
+                    error = true;
                     foreach (var t in files)
                         using (var stringReader3 = new StringReader(File.ReadAllText(t.FullName)))
                         {
@@ -162,13 +173,16 @@ namespace KamiyoStaticUtil.Utils
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogError("Error loading Characters Name Texts packageId : " + item.Key + " Language : " +
-                                   ModParameters.Language + " Error : " + ex.Message);
+                    if (error)
+                        Debug.LogError("Error loading Characters Name Texts packageId : " + item.Key + " Language : " +
+                                       ModParameters.Language + " Error : " + ex.Message);
                 }
 
                 try
                 {
+                    error = false;
                     files = new DirectoryInfo(item.Value + "/Localize/" + ModParameters.Language + "/Books").GetFiles();
+                    error = true;
                     foreach (var t in files)
                         using (var stringReader4 = new StringReader(File.ReadAllText(t.FullName)))
                         {
@@ -206,14 +220,17 @@ namespace KamiyoStaticUtil.Utils
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogError("Error loading Books Texts packageId : " + item.Key + " Language : " +
-                                   ModParameters.Language + " Error : " + ex.Message);
+                    if (error)
+                        Debug.LogError("Error loading Books Texts packageId : " + item.Key + " Language : " +
+                                       ModParameters.Language + " Error : " + ex.Message);
                 }
 
                 try
                 {
+                    error = false;
                     files = new DirectoryInfo(item.Value + "/Localize/" + ModParameters.Language + "/DropBooks")
                         .GetFiles();
+                    error = true;
                     foreach (var t in files)
                         using (var stringReader5 = new StringReader(File.ReadAllText(t.FullName)))
                         {
@@ -248,14 +265,17 @@ namespace KamiyoStaticUtil.Utils
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogError("Error loading Drop Books packageId : " + item.Key + " Language : " +
-                                   ModParameters.Language + " Error : " + ex.Message);
+                    if (error)
+                        Debug.LogError("Error loading Drop Books packageId : " + item.Key + " Language : " +
+                                       ModParameters.Language + " Error : " + ex.Message);
                 }
 
                 try
                 {
+                    error = false;
                     files = new DirectoryInfo(item.Value + "/Localize/" + ModParameters.Language + "/StageName")
                         .GetFiles();
+                    error = true;
                     foreach (var t in files)
                         using (var stringReader6 = new StringReader(File.ReadAllText(t.FullName)))
                         {
@@ -276,14 +296,17 @@ namespace KamiyoStaticUtil.Utils
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogError("Error loading Stage Names Texts packageId : " + item.Key + " Language : " +
-                                   ModParameters.Language + " Error : " + ex.Message);
+                    if (error)
+                        Debug.LogError("Error loading Stage Names Texts packageId : " + item.Key + " Language : " +
+                                       ModParameters.Language + " Error : " + ex.Message);
                 }
 
                 try
                 {
+                    error = false;
                     files = new DirectoryInfo(item.Value + "/Localize/" + ModParameters.Language + "/PassiveDesc")
                         .GetFiles();
+                    error = true;
                     foreach (var t in files)
                         using (var stringReader7 = new StringReader(File.ReadAllText(t.FullName)))
                         {
@@ -303,18 +326,21 @@ namespace KamiyoStaticUtil.Utils
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogError("Error loading Passive Desc Texts packageId : " + item.Key + " Language : " +
-                                   ModParameters.Language + " Error : " + ex.Message);
+                    if (error)
+                        Debug.LogError("Error loading Passive Desc Texts packageId : " + item.Key + " Language : " +
+                                       ModParameters.Language + " Error : " + ex.Message);
                 }
 
                 try
                 {
+                    error = false;
                     var cardAbilityDictionary = typeof(BattleCardAbilityDescXmlList)
                             .GetField("_dictionary", AccessTools.all)
                             ?.GetValue(Singleton<BattleCardAbilityDescXmlList>.Instance) as
                         Dictionary<string, BattleCardAbilityDesc>;
                     files = new DirectoryInfo(item.Value + "/Localize/" + ModParameters.Language +
                                               "/BattleCardAbilities").GetFiles();
+                    error = true;
                     foreach (var t in files)
                         using (var stringReader8 = new StringReader(File.ReadAllText(t.FullName)))
                         {
@@ -329,14 +355,16 @@ namespace KamiyoStaticUtil.Utils
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogError("Error loading Battle Card Abilities Texts packageId : " + item.Key +
-                                   " Language : " + ModParameters.Language + " Error : " + ex.Message);
+                    if (error)
+                        Debug.LogError("Error loading Battle Card Abilities Texts packageId : " + item.Key +
+                                       " Language : " + ModParameters.Language + " Error : " + ex.Message);
                 }
             }
         }
 
         public static void AddLocalLocalize(string path, string packageId)
         {
+            var error = false;
             FileInfo[] files;
             try
             {
@@ -346,6 +374,7 @@ namespace KamiyoStaticUtil.Utils
                         Dictionary<string, BattleEffectText>;
                 files = new DirectoryInfo(path + "/Localize/" + ModParameters.Language + "/EffectTexts")
                     .GetFiles();
+                error = true;
                 foreach (var t in files)
                     using (var stringReader = new StringReader(File.ReadAllText(t.FullName)))
                     {
@@ -364,14 +393,17 @@ namespace KamiyoStaticUtil.Utils
             }
             catch (Exception ex)
             {
-                Debug.LogError("Error loading Effect Texts packageId : " + packageId + " Language : " +
-                               ModParameters.Language + " Error : " + ex.Message);
+                if (error)
+                    Debug.LogError("Error loading Effect Texts packageId : " + packageId + " Language : " +
+                                   ModParameters.Language + " Error : " + ex.Message);
             }
 
             try
             {
+                error = false;
                 files = new DirectoryInfo(path + "/Localize/" + ModParameters.Language + "/BattlesCards")
                     .GetFiles();
+                error = true;
                 foreach (var t in files)
                     using (var stringReader2 = new StringReader(File.ReadAllText(t.FullName)))
                     {
@@ -408,18 +440,21 @@ namespace KamiyoStaticUtil.Utils
             }
             catch (Exception ex)
             {
-                Debug.LogError("Error loading Battle Cards Texts packageId : " + packageId + " Language : " +
-                               ModParameters.Language + " Error : " + ex.Message);
+                if (error)
+                    Debug.LogError("Error loading Battle Cards Texts packageId : " + packageId + " Language : " +
+                                   ModParameters.Language + " Error : " + ex.Message);
             }
 
             try
             {
+                error = false;
                 files = new DirectoryInfo(path + "/Localize/" + ModParameters.Language + "/BattleDialog")
                     .GetFiles();
                 var dialogDictionary =
                     (Dictionary<string, BattleDialogRoot>)BattleDialogXmlList.Instance.GetType()
                         .GetField("_dictionary", AccessTools.all)
                         ?.GetValue(BattleDialogXmlList.Instance);
+                error = true;
                 foreach (var t in files)
                     using (var stringReader = new StringReader(File.ReadAllText(t.FullName)))
                     {
@@ -452,15 +487,17 @@ namespace KamiyoStaticUtil.Utils
             }
             catch (Exception ex)
             {
-                Debug.LogError("Error loading Battle Dialogs Texts packageId : " + packageId + " Language : " +
-                               ModParameters.Language + " Error : " + ex.Message);
-                ;
+                if (error)
+                    Debug.LogError("Error loading Battle Dialogs Texts packageId : " + packageId + " Language : " +
+                                   ModParameters.Language + " Error : " + ex.Message);
             }
 
             try
             {
+                error = false;
                 files = new DirectoryInfo(path + "/Localize/" + ModParameters.Language + "/CharactersName")
                     .GetFiles();
+                error = true;
                 foreach (var t in files)
                     using (var stringReader3 = new StringReader(File.ReadAllText(t.FullName)))
                     {
@@ -484,13 +521,16 @@ namespace KamiyoStaticUtil.Utils
             }
             catch (Exception ex)
             {
-                Debug.LogError("Error loading Characters Name Texts packageId : " + packageId + " Language : " +
-                               ModParameters.Language + " Error : " + ex.Message);
+                if (error)
+                    Debug.LogError("Error loading Characters Name Texts packageId : " + packageId + " Language : " +
+                                   ModParameters.Language + " Error : " + ex.Message);
             }
 
             try
             {
+                error = false;
                 files = new DirectoryInfo(path + "/Localize/" + ModParameters.Language + "/Books").GetFiles();
+                error = true;
                 foreach (var t in files)
                     using (var stringReader4 = new StringReader(File.ReadAllText(t.FullName)))
                     {
@@ -528,14 +568,17 @@ namespace KamiyoStaticUtil.Utils
             }
             catch (Exception ex)
             {
-                Debug.LogError("Error loading Books Texts packageId : " + packageId + " Language : " +
-                               ModParameters.Language + " Error : " + ex.Message);
+                if (error)
+                    Debug.LogError("Error loading Books Texts packageId : " + packageId + " Language : " +
+                                   ModParameters.Language + " Error : " + ex.Message);
             }
 
             try
             {
+                error = false;
                 files = new DirectoryInfo(path + "/Localize/" + ModParameters.Language + "/DropBooks")
                     .GetFiles();
+                error = true;
                 foreach (var t in files)
                     using (var stringReader5 = new StringReader(File.ReadAllText(t.FullName)))
                     {
@@ -570,14 +613,17 @@ namespace KamiyoStaticUtil.Utils
             }
             catch (Exception ex)
             {
-                Debug.LogError("Error loading Drop Books Texts packageId : " + packageId + " Language : " +
-                               ModParameters.Language + " Error : " + ex.Message);
+                if (error)
+                    Debug.LogError("Error loading Drop Books Texts packageId : " + packageId + " Language : " +
+                                   ModParameters.Language + " Error : " + ex.Message);
             }
 
             try
             {
+                error = false;
                 files = new DirectoryInfo(path + "/Localize/" + ModParameters.Language + "/StageName")
                     .GetFiles();
+                error = true;
                 foreach (var t in files)
                     using (var stringReader6 = new StringReader(File.ReadAllText(t.FullName)))
                     {
@@ -598,14 +644,17 @@ namespace KamiyoStaticUtil.Utils
             }
             catch (Exception ex)
             {
-                Debug.LogError("Error loading Stage Names Texts packageId : " + packageId + " Language : " +
-                               ModParameters.Language + " Error : " + ex.Message);
+                if (error)
+                    Debug.LogError("Error loading Stage Names Texts packageId : " + packageId + " Language : " +
+                                   ModParameters.Language + " Error : " + ex.Message);
             }
 
             try
             {
+                error = false;
                 files = new DirectoryInfo(path + "/Localize/" + ModParameters.Language + "/PassiveDesc")
                     .GetFiles();
+                error = true;
                 foreach (var t in files)
                     using (var stringReader7 = new StringReader(File.ReadAllText(t.FullName)))
                     {
@@ -625,18 +674,21 @@ namespace KamiyoStaticUtil.Utils
             }
             catch (Exception ex)
             {
-                Debug.LogError("Error loading Passive Desc Texts packageId : " + packageId + " Language : " +
-                               ModParameters.Language + " Error : " + ex.Message);
+                if (error)
+                    Debug.LogError("Error loading Passive Desc Texts packageId : " + packageId + " Language : " +
+                                   ModParameters.Language + " Error : " + ex.Message);
             }
 
             try
             {
+                error = false;
                 var cardAbilityDictionary = typeof(BattleCardAbilityDescXmlList)
                         .GetField("_dictionary", AccessTools.all)
                         ?.GetValue(Singleton<BattleCardAbilityDescXmlList>.Instance) as
                     Dictionary<string, BattleCardAbilityDesc>;
                 files = new DirectoryInfo(path + "/Localize/" + ModParameters.Language +
                                           "/BattleCardAbilities").GetFiles();
+                error = true;
                 foreach (var t in files)
                     using (var stringReader8 = new StringReader(File.ReadAllText(t.FullName)))
                     {
@@ -651,8 +703,10 @@ namespace KamiyoStaticUtil.Utils
             }
             catch (Exception ex)
             {
-                Debug.LogError("Error loading Battle Card Abilities Texts packageId : " + packageId + " Language : " +
-                               ModParameters.Language + " Error : " + ex.Message);
+                if (error)
+                    Debug.LogError("Error loading Battle Card Abilities Texts packageId : " + packageId +
+                                   " Language : " +
+                                   ModParameters.Language + " Error : " + ex.Message);
             }
         }
 

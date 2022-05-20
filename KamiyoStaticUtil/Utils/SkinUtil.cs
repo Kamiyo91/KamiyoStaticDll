@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using HarmonyLib;
 using KamiyoStaticBLL.Models;
@@ -273,6 +274,25 @@ namespace KamiyoStaticUtil.Utils
 
                 num++;
             }
+        }
+
+        public static void GetUnity(DirectoryInfo dir)
+        {
+            if (dir.GetDirectories().Length != 0)
+            {
+                var directories = dir.GetDirectories();
+                foreach (var t in directories)
+                    GetUnity(t);
+            }
+
+            foreach (var fileInfo in dir.GetFiles())
+                AddAssets(Path.GetFileNameWithoutExtension(fileInfo.FullName), fileInfo.FullName);
+        }
+
+        private static void AddAssets(string name, string path)
+        {
+            var value = AssetBundle.LoadFromFile(path);
+            ModParameters.AssetBundle.Add(name, value);
         }
     }
 }

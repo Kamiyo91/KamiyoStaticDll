@@ -443,8 +443,8 @@ namespace KamiyoStaticHarmony.Harmony
             __instance.charAppearance.ChangeLayer("Character");
             __instance.charAppearance.SetLibrarianOnlySprites(__instance.model.faction);
             __instance.model.UnitData.unitData.bookItem.ClassInfo.CharacterSkin = new List<string> { charName };
+            if (!ModParameters.SkinsCustomHeights.ContainsKey(charName)) return;
             var customHeight = ModParameters.SkinsCustomHeights.FirstOrDefault(x => x.Key == charName);
-            if (customHeight.Equals(default)) return;
             __instance.ChangeHeight(customHeight.Value);
         }
 

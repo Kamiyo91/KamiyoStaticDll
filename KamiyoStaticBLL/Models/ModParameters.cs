@@ -58,6 +58,7 @@ namespace KamiyoStaticBLL.Models
         public static List<Tuple<LorId, LorId>> ChainRelease = new List<Tuple<LorId, LorId>>();
         public static List<LorId> ExtraMotions = new List<LorId>();
         public static List<LorId> BookList = new List<LorId>();
+        public static Dictionary<LorId,int> CardsList = new Dictionary<LorId, int>();
         public static List<LorId> EmotionExcludePassive = new List<LorId>();
 
         public static Dictionary<LorId, List<SephirahType>> UniqueUnitStages =

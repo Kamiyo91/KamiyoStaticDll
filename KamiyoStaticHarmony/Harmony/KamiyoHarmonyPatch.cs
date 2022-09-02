@@ -458,6 +458,13 @@ namespace KamiyoStaticHarmony.Harmony
                 if (bookCount < 99) __instance.AddBook(book, 99 - bookCount);
             }
         }
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(InventoryModel), "LoadFromSaveData")]
+        public static void InventoryModel_LoadFromSaveData(InventoryModel __instance)
+        {
+            foreach (var cardItem in from cardItem in ModParameters.CardsList let cardCount = __instance.GetCardCount(cardItem.Key) where cardCount < cardItem.Value select cardItem)
+                __instance.AddCard(cardItem.Key, cardItem.Value);
+        }
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(StageController), "BonusRewardWithPopup")]

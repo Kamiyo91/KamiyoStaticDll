@@ -255,7 +255,43 @@ namespace KamiyoStaticUtil.Utils
             allyUnit.OnWaveStart();
             return allyUnit;
         }
-
+        public static BattleUnitModel AddNewUnitPlayerSideCustomData(StageLibraryFloorModel floor, UnitModel unit,
+            string packageId)
+        {
+            var unitData = new UnitDataModel((int)floor.Sephirah * 10, floor.Sephirah);
+            var customBook = Singleton<BookInventoryModel>.Instance.GetBookListAll()
+                    .FirstOrDefault(x => x.BookId.Equals(new LorId(packageId, unit.Id)));
+            if (customBook != null)
+            {
+                customBook.owner = null;
+                unitData.EquipBook(customBook);
+            }
+            unitData.SetCustomName(unit.Name);
+            var allyUnit = BattleObjectManager.CreateDefaultUnit(Faction.Player);
+            allyUnit.index = unit.Pos;
+            allyUnit.grade = unitData.grade;
+            allyUnit.formation = unit.CustomPos != null
+                ? new FormationPosition(new FormationPositionXmlData
+                {
+                    vector = unit.CustomPos
+                })
+                : floor.GetFormationPosition(allyUnit.index);
+            var unitBattleData = new UnitBattleDataModel(Singleton<StageController>.Instance.GetStageModel(), unitData);
+            unitBattleData.Init();
+            allyUnit.SetUnitData(unitBattleData);
+            allyUnit.OnCreated();
+            BattleObjectManager.instance.RegisterUnit(allyUnit);
+            allyUnit.passiveDetail.OnUnitCreated();
+            LevelUpEmotion(allyUnit, unit.EmotionLevel);
+            if (unit.LockedEmotion)
+                allyUnit.emotionDetail.SetMaxEmotionLevel(unit.MaxEmotionLevel);
+            allyUnit.allyCardDetail.DrawCards(allyUnit.UnitData.unitData.GetStartDraw());
+            allyUnit.cardSlotDetail.RecoverPlayPoint(allyUnit.cardSlotDetail.GetMaxPlayPoint());
+            if (unit.AddEmotionPassive)
+                AddEmotionPassives(allyUnit);
+            allyUnit.OnWaveStart();
+            return allyUnit;
+        }
         public static BattleUnitModel AddNewUnitWithPreUnitData(StageLibraryFloorModel floor, UnitModel unit,
             UnitDataModel unitData, bool playerSide = true)
         {
@@ -639,10 +675,10 @@ namespace KamiyoStaticUtil.Utils
                          ModParameters.UntransferablePassives.Contains(passive.id)))
                 passive.CanGivePassive = false;
             foreach (var item in ModParameters.SameInnerIdPassives)
-            foreach (var passive in Singleton<PassiveXmlList>.Instance.GetDataAll().Where(passive =>
-                         passive.id.packageId == packageId &&
-                         item.Value.Contains(passive.id)))
-                passive.InnerTypeId = item.Key;
+                foreach (var passive in Singleton<PassiveXmlList>.Instance.GetDataAll().Where(passive =>
+                             passive.id.packageId == packageId &&
+                             item.Value.Contains(passive.id)))
+                    passive.InnerTypeId = item.Key;
         }
 
         public static void RemoveDiceTargets(BattleUnitModel unit)
@@ -772,7 +808,7 @@ namespace KamiyoStaticUtil.Utils
         {
             foreach (var assembly in assemblies)
                 assembly.GetTypes().ToList().FindAll(x => x.Name.StartsWith("DiceAttackEffect_"))
-                    .ForEach(delegate(Type x) //Creating Custom Effects
+                    .ForEach(delegate (Type x) //Creating Custom Effects
                     {
                         ModParameters.CustomEffects[x.Name.Replace("DiceAttackEffect_", "")] = x;
                     });

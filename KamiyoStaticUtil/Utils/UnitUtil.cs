@@ -292,6 +292,68 @@ namespace KamiyoStaticUtil.Utils
             allyUnit.OnWaveStart();
             return allyUnit;
         }
+        public static BattleUnitModel AddNewUnitPlayerSideCustomDataOnPlay(StageLibraryFloorModel floor, UnitModel unit,
+            string packageId, bool autoPlay)
+        {
+            var unitData = new UnitDataModel((int)floor.Sephirah * 10, floor.Sephirah);
+            var customBook = Singleton<BookInventoryModel>.Instance.GetBookListAll()
+                    .FirstOrDefault(x => x.BookId.Equals(new LorId(packageId, unit.Id)));
+            if (customBook != null)
+            {
+                customBook.owner = null;
+                unitData.EquipBook(customBook);
+            }
+            unitData.SetCustomName(unit.Name);
+            var allyUnit = BattleObjectManager.CreateDefaultUnit(Faction.Player);
+            allyUnit.index = unit.Pos;
+            allyUnit.grade = unitData.grade;
+            allyUnit.formation = unit.CustomPos != null
+                ? new FormationPosition(new FormationPositionXmlData
+                {
+                    vector = unit.CustomPos
+                })
+                : floor.GetFormationPosition(allyUnit.index);
+            var unitBattleData = new UnitBattleDataModel(Singleton<StageController>.Instance.GetStageModel(), unitData);
+            unitBattleData.Init();
+            allyUnit.SetUnitData(unitBattleData);
+            allyUnit.OnCreated();
+            allyUnit.speedDiceResult = new List<SpeedDice>();
+            BattleObjectManager.instance.RegisterUnit(allyUnit);
+            allyUnit.passiveDetail.OnUnitCreated();
+            LevelUpEmotion(allyUnit, unit.EmotionLevel);
+            if (unit.LockedEmotion)
+                allyUnit.emotionDetail.SetMaxEmotionLevel(unit.MaxEmotionLevel);
+            allyUnit.allyCardDetail.DrawCards(allyUnit.UnitData.unitData.GetStartDraw());
+            allyUnit.cardSlotDetail.RecoverPlayPoint(allyUnit.cardSlotDetail.GetMaxPlayPoint());
+            if (unit.AddEmotionPassive)
+                AddEmotionPassives(allyUnit);
+            allyUnit.OnWaveStart();
+            allyUnit.OnRoundStart_speedDice();
+            allyUnit.RollSpeedDice();
+            if (autoPlay) SetAutoCardForPlayer(allyUnit);
+            return allyUnit;
+        }
+        public static void SetAutoCardForPlayer(BattleUnitModel unit)
+        {
+            for (var j = 0; j < unit.speedDiceResult.Count; j++)
+            {
+                if (unit.speedDiceResult[j].breaked || unit.cardSlotDetail.cardAry[j] != null) continue;
+                unit.cardOrder = j;
+                unit.allyCardDetail.PlayTurnAutoForPlayer(j);
+            }
+            var selectedAllyDice = SingletonBehavior<BattleManagerUI>.Instance.selectedAllyDice;
+            SingletonBehavior<BattleManagerUI>.Instance.ui_TargetArrow.UpdateTargetList();
+            SingletonBehavior<BattleManagerUI>.Instance.ui_emotionInfoBar.UpdateCardsStateUI();
+            SingletonBehavior<BattleManagerUI>.Instance.ui_unitInformationPlayer.ReleaseSelectedCard();
+            SingletonBehavior<BattleManagerUI>.Instance.ui_unitInformationPlayer.CloseUnitInformation(true, -1);
+            SingletonBehavior<BattleManagerUI>.Instance.ui_unitCardsInHand.OnPointerOverInSpeedDice = null;
+            SingletonBehavior<BattleManagerUI>.Instance.ui_unitCardsInHand.SetToDefault();
+            if (selectedAllyDice != null)
+            {
+                BattleUIInputController.Instance.ResetCharacterCursor(false);
+            }
+
+        }
         public static BattleUnitModel AddNewUnitWithPreUnitData(StageLibraryFloorModel floor, UnitModel unit,
             UnitDataModel unitData, bool playerSide = true)
         {
@@ -779,6 +841,103 @@ namespace KamiyoStaticUtil.Utils
 
             unit.view.speedDiceSetterUI.BlockDiceAll(true);
             unit.view.speedDiceSetterUI.BreakDiceAll(true);
+            SingletonBehavior<BattleManagerUI>.Instance.ui_TargetArrow.UpdateTargetList();
+        }
+        public static void RemoveDiceTargetsWithoutBreak(BattleUnitModel unit)
+        {
+            unit.view.speedDiceSetterUI.DeselectAll();
+            foreach (var speedDice in unit.speedDiceResult)
+                speedDice.breaked = false;
+            var actionableEnemyList = Singleton<StageController>.Instance.GetActionableEnemyList();
+            if (unit.faction != Faction.Player)
+                return;
+            foreach (var actor in actionableEnemyList)
+            {
+                if (actor.turnState != BattleUnitTurnState.BREAK)
+                    actor.turnState = BattleUnitTurnState.WAIT_CARD;
+                try
+                {
+                    for (var index2 = 0; index2 < actor.speedDiceResult.Count; ++index2)
+                    {
+                        if (actor.speedDiceResult[index2].breaked || index2 >= actor.cardSlotDetail.cardAry.Count)
+                            continue;
+                        var cardDataInUnitModel = actor.cardSlotDetail.cardAry[index2];
+                        if (cardDataInUnitModel?.card == null) continue;
+                        if (cardDataInUnitModel.card.GetSpec().Ranged == CardRange.FarArea ||
+                            cardDataInUnitModel.card.GetSpec().Ranged == CardRange.FarAreaEach)
+                        {
+                            if (cardDataInUnitModel.subTargets.Exists(x => x.target == unit))
+                            {
+                                cardDataInUnitModel.subTargets.RemoveAll(x => x.target == unit);
+                            }
+                            else if (cardDataInUnitModel.target == unit)
+                            {
+                                if (cardDataInUnitModel.subTargets.Count > 0)
+                                {
+                                    var subTarget = RandomUtil.SelectOne(cardDataInUnitModel.subTargets);
+                                    cardDataInUnitModel.target = subTarget.target;
+                                    cardDataInUnitModel.targetSlotOrder = subTarget.targetSlotOrder;
+                                    cardDataInUnitModel.earlyTarget = subTarget.target;
+                                    cardDataInUnitModel.earlyTargetOrder = subTarget.targetSlotOrder;
+                                }
+                                else
+                                {
+                                    actor.allyCardDetail.ReturnCardToHand(actor.cardSlotDetail.cardAry[index2].card);
+                                    actor.cardSlotDetail.cardAry[index2] = null;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (cardDataInUnitModel.subTargets.Exists(x => x.target == unit))
+                                cardDataInUnitModel.subTargets.RemoveAll(x => x.target == unit);
+                            if (cardDataInUnitModel.target == unit)
+                            {
+                                var targetByCard = BattleObjectManager.instance.GetTargetByCard(actor,
+                                    cardDataInUnitModel.card, index2, actor.TeamKill());
+                                if (targetByCard != null)
+                                {
+                                    var targetSlot = Random.Range(0, targetByCard.speedDiceResult.Count);
+                                    var num = actor.ChangeTargetSlot(cardDataInUnitModel.card, targetByCard, index2,
+                                        targetSlot, actor.TeamKill());
+                                    cardDataInUnitModel.target = targetByCard;
+                                    cardDataInUnitModel.targetSlotOrder = num;
+                                    cardDataInUnitModel.earlyTarget = targetByCard;
+                                    cardDataInUnitModel.earlyTargetOrder = num;
+                                }
+                                else
+                                {
+                                    actor.allyCardDetail.ReturnCardToHand(actor.cardSlotDetail.cardAry[index2].card);
+                                    actor.cardSlotDetail.cardAry[index2] = null;
+                                }
+                            }
+                            else if (cardDataInUnitModel.earlyTarget == unit)
+                            {
+                                var targetByCard = BattleObjectManager.instance.GetTargetByCard(actor,
+                                    cardDataInUnitModel.card, index2, actor.TeamKill());
+                                if (targetByCard != null)
+                                {
+                                    var targetSlot = Random.Range(0, targetByCard.speedDiceResult.Count);
+                                    var num = actor.ChangeTargetSlot(cardDataInUnitModel.card, targetByCard, index2,
+                                        targetSlot, actor.TeamKill());
+                                    cardDataInUnitModel.earlyTarget = targetByCard;
+                                    cardDataInUnitModel.earlyTargetOrder = num;
+                                }
+                                else
+                                {
+                                    cardDataInUnitModel.earlyTarget = cardDataInUnitModel.target;
+                                    cardDataInUnitModel.earlyTargetOrder = cardDataInUnitModel.targetSlotOrder;
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+                    Debug.LogError("target change error");
+                }
+            }
+            unit.view.speedDiceSetterUI.BlockDiceAll(true);
             SingletonBehavior<BattleManagerUI>.Instance.ui_TargetArrow.UpdateTargetList();
         }
 

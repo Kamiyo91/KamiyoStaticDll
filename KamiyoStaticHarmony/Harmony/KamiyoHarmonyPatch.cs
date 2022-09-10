@@ -169,16 +169,15 @@ namespace KamiyoStaticHarmony.Harmony
             bool isEnemySetting, bool force, BookModel __state)
         {
             if (force) return;
-            if (newBook == null || !ModParameters.PackageIds.Contains(newBook.ClassInfo.id.packageId)) return;
+            if (__state == null || !ModParameters.PackageIds.Contains(__state.ClassInfo.id.packageId)) return;
             if (ModParameters.SkinNameIds != null && ModParameters.SkinNameIds.Any(x =>
-                    x.Item2.Contains(newBook.ClassInfo.id) && newBook.ClassInfo.CharacterSkin.Contains(x.Item1)))
-                newBook.ClassInfo.CharacterSkin = new List<string>
+                    x.Item2.Contains(__state.ClassInfo.id) && __state.ClassInfo.CharacterSkin.Contains(x.Item1)))
+                __state.ClassInfo.CharacterSkin = new List<string>
                 {
-                    ModParameters.SkinNameIds.FirstOrDefault(x => newBook.ClassInfo.CharacterSkin.Contains(x.Item1))
+                    ModParameters.SkinNameIds.FirstOrDefault(x => __state.ClassInfo.CharacterSkin.Contains(x.Item1))
                         ?.Item3
                 };
-
-            if (__state != null && ModParameters.DynamicSephirahNames.ContainsKey(__state.ClassInfo.id))
+            if (ModParameters.DynamicSephirahNames.ContainsKey(__state.ClassInfo.id))
             {
                 if (!ModParameters.CustomSkinTrue.Contains(__state.ClassInfo.id))
                     __instance.customizeData.SetCustomData(false);
@@ -190,12 +189,11 @@ namespace KamiyoStaticHarmony.Harmony
                 __instance.EquipBook(__state, isEnemySetting, true);
                 return;
             }
-
-            if (!ModParameters.DynamicNames.ContainsKey(newBook.ClassInfo.id)) return;
+            if (!ModParameters.DynamicNames.ContainsKey(__state.ClassInfo.id)) return;
             if (UnitUtil.CheckSkinUnitData(__instance)) return;
-            if (!ModParameters.CustomSkinTrue.Contains(newBook.ClassInfo.id))
+            if (!ModParameters.CustomSkinTrue.Contains(__state.ClassInfo.id))
                 __instance.customizeData.SetCustomData(false);
-            var nameId = ModParameters.DynamicNames[newBook.ClassInfo.id];
+            var nameId = ModParameters.DynamicNames[__state.ClassInfo.id];
             __instance.SetTempName(ModParameters.NameTexts[nameId]);
         }
 
